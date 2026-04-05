@@ -1,0 +1,233 @@
+<section class="module" id="module-4" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">04</span>
+      <h1 class="module-title">Teaching AI to Read Time</h1>
+      <p class="module-subtitle">Two architectures that learn patterns in sequences — and how they&apos;re trained, evaluated, and compared.</p>
+    </header>
+
+    <div class="module-body">
+
+      <!-- Screen 1: Why normal AI can't handle sequences -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Why ordinary AI can&apos;t read a fitness timeline</h2>
+        <p>A simple <span class="tooltip-term" data-tooltip="A type of AI model that works like a series of mathematical transformations — inputs go in, numbers get multiplied and added through layers, and a prediction comes out. Great for fixed-size inputs, but blind to order and time.">neural network</span> sees a set of numbers and produces an output. But it&apos;s completely blind to <em>order</em>. It wouldn&apos;t know if Monday came before Tuesday or after Wednesday.</p>
+
+        <div class="callout callout-info" style="margin: var(--space-6) 0;">
+          <div class="callout-icon">🎵</div>
+          <div class="callout-body">
+            <strong>The music sheet metaphor:</strong> Imagine someone reads a piece of music — but they see all the notes at once, shuffled randomly. They could tell you which notes are there, but they couldn&apos;t play the melody. Fitness data is like music: the <em>sequence and rhythm</em> matter, not just which numbers appear.
+          </div>
+        </div>
+
+        <p>This project uses two architectures designed specifically for sequences:</p>
+
+        <div class="pattern-cards stagger-children">
+          <div class="pattern-card animate-in" style="border-top: 3px solid var(--color-actor-1);">
+            <div class="pattern-card-icon">🔄</div>
+            <h3 style="color: var(--color-actor-1);">FitnessLSTM</h3>
+            <p>An LSTM reads the sequence step by step, maintaining a &quot;memory&quot; that it updates as it sees each new day. Like reading a story — each sentence builds on what came before.</p>
+          </div>
+          <div class="pattern-card animate-in" style="border-top: 3px solid var(--color-actor-2);">
+            <div class="pattern-card-icon">🔭</div>
+            <h3 style="color: var(--color-actor-2);">FitnessTransformer</h3>
+            <p>A Transformer reads the whole sequence at once and uses <em>attention</em> to decide which days matter most. Like re-reading a story with the ending in mind — now you know which clues were important.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 2: LSTM architecture -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">FitnessLSTM — the step-by-step reader</h2>
+        <p>LSTM stands for <span class="tooltip-term" data-tooltip="Long Short-Term Memory — a type of recurrent neural network designed to remember useful information over long sequences while forgetting irrelevant details. Invented in 1997, still widely used.">Long Short-Term Memory</span>. It processes one day at a time, maintaining a hidden state that carries information forward through the sequence.</p>
+
+        <div class="translation-block animate-in">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-property">self</span>.<span class="code-property">input_proj</span> = <span class="code-function">nn.Linear</span>(<span class="code-property">N_FEATURES</span>, <span class="code-property">d_model</span>)</span>
+<span class="code-line"><span class="code-property">self</span>.<span class="code-property">lstm</span> = <span class="code-function">nn.LSTM</span>(</span>
+<span class="code-line">    <span class="code-property">input_size</span>=<span class="code-property">d_model</span>,</span>
+<span class="code-line">    <span class="code-property">hidden_size</span>=<span class="code-property">hidden_size</span>,</span>
+<span class="code-line">    <span class="code-property">num_layers</span>=<span class="code-property">n_layers</span>,</span>
+<span class="code-line">    <span class="code-property">bidirectional</span>=<span class="code-keyword">True</span>,</span>
+<span class="code-line">)</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">A translation layer: compress the 15 raw features into 32 richer numbers.</p>
+              <p class="tl">Create the LSTM — the sequence-reading engine.</p>
+              <p class="tl">Each day gets compressed to 32 numbers first.</p>
+              <p class="tl">The &quot;memory&quot; size — how much the model can remember at each step.</p>
+              <p class="tl">Stack multiple LSTM layers for deeper pattern detection.</p>
+              <p class="tl">Bidirectional: read the sequence both forward AND backward — since we have the full window at test time.</p>
+              <p class="tl">End of LSTM setup.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Why bidirectional?</strong> Reading a fitness history forward makes sense — earlier fitness affects later fitness. But reading backward too helps the model spot where trends <em>end</em>, not just begin. Since we have the whole window at prediction time (not a live stream), this is safe and useful.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 3: Transformer architecture -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">FitnessTransformer — the attention reader</h2>
+        <p>The <span class="tooltip-term" data-tooltip="A neural network architecture that processes sequences using attention mechanisms rather than reading step-by-step. The same architecture powering GPT, Claude, and most modern AI. Published in &apos;Attention Is All You Need&apos; (2017).">Transformer</span> architecture doesn&apos;t read the sequence step-by-step. Instead, it converts each day into a &quot;token&quot; and then uses <span class="tooltip-term" data-tooltip="A mechanism that lets the model decide which parts of the input to focus on when making predictions. If the model is predicting memory performance, attention might focus on days with high exercise intensity.">attention</span> to decide which days are most relevant to predicting cognition.</p>
+
+        <div class="flow-animation" data-steps='[
+          {"highlight":"flow-actor-1","label":"90 days of fitness data come in (90 rows x 15 features)","packet":false},
+          {"highlight":"flow-actor-2","label":"Input projection: each day gets compressed to a 64-number token","packet":true,"from":"1","to":"2"},
+          {"highlight":"flow-actor-3","label":"Positional embedding added: each token learns it is day 1, day 2, ... day 90","packet":true,"from":"2","to":"3"},
+          {"highlight":"flow-actor-4","label":"Attention layers: every day looks at every other day and decides which ones matter most","packet":true,"from":"3","to":"4"},
+          {"highlight":"flow-actor-5","label":"Mean pooling + prediction head: average across all days, then predict 3 cognitive scores","packet":true,"from":"4","to":"5"}
+        ]'>
+          <div class="flow-actors">
+            <div class="flow-actor" id="flow-actor-1">
+              <div class="flow-actor-icon">📊</div>
+              <div class="flow-actor-name">Raw Window</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-2">
+              <div class="flow-actor-icon">🔢</div>
+              <div class="flow-actor-name">Tokens</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-3">
+              <div class="flow-actor-icon">📍</div>
+              <div class="flow-actor-name">Positioned</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-4">
+              <div class="flow-actor-icon">🔭</div>
+              <div class="flow-actor-name">Attention</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-5">
+              <div class="flow-actor-icon">🎯</div>
+              <div class="flow-actor-name">Prediction</div>
+            </div>
+          </div>
+          <div class="flow-status"></div>
+          <div class="flow-controls">
+            <button class="btn flow-next-btn">Next Step →</button>
+            <button class="btn flow-reset-btn">Reset</button>
+          </div>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-icon">🔭</div>
+          <div class="callout-body">
+            <strong>The interpretability bonus:</strong> The Transformer saves its attention weights — you can literally inspect <em>which days</em> the model focused on when making its prediction. Did it attend to the high-steps days? The low-sedentary days? This turns the model into a scientific instrument.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 4: The Trainer — how models learn -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The Trainer — teaching the model through repetition</h2>
+        <p>The <code>Trainer</code> class runs the learning loop. Training an AI model is iterative — you show it examples, it makes predictions, you measure how wrong it was, and it adjusts itself slightly. Repeat thousands of times.</p>
+
+        <div class="pattern-cards stagger-children">
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">📐</div>
+            <h3>MSE Loss</h3>
+            <p><span class="tooltip-term" data-tooltip="Mean Squared Error — the average of (prediction - truth)² across all examples. A loss of 0 means perfect predictions. The model tries to minimize this number.">MSE</span> measures how wrong the predictions are. Squaring the errors penalizes big mistakes more than small ones. The model tries to shrink this number every iteration.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">🧭</div>
+            <h3>AdamW Optimizer</h3>
+            <p><span class="tooltip-term" data-tooltip="An optimization algorithm that adjusts the model&apos;s weights (numbers) to reduce prediction error. AdamW is a popular variant that also penalizes large weights to prevent overfitting.">AdamW</span> decides how to adjust the model&apos;s millions of internal numbers after each batch of examples. It&apos;s the engine of learning.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">🛑</div>
+            <h3>Early Stopping</h3>
+            <p>If the model stops improving on the <span class="tooltip-term" data-tooltip="A separate set of data used to evaluate the model during training — the model never learns from it, but training stops when performance here stops improving.">validation set</span> for 10 epochs in a row, training stops. This prevents <span class="tooltip-term" data-tooltip="When a model memorizes the training examples instead of learning general patterns — it aces training data but fails on new data it hasn&apos;t seen.">overfitting</span> to the training data.</p>
+          </div>
+        </div>
+
+        <div class="translation-block animate-in">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">if</span> <span class="code-property">v_loss</span> &lt; <span class="code-property">best_val_loss</span>:</span>
+<span class="code-line">    <span class="code-property">best_val_loss</span> = <span class="code-property">v_loss</span></span>
+<span class="code-line">    <span class="code-property">best_state</span> = {...<span class="code-property">model.state_dict</span>()...}</span>
+<span class="code-line">    <span class="code-property">patience_counter</span> = <span class="code-number">0</span></span>
+<span class="code-line"><span class="code-keyword">else</span>:</span>
+<span class="code-line">    <span class="code-property">patience_counter</span> += <span class="code-number">1</span></span>
+<span class="code-line">    <span class="code-keyword">if</span> <span class="code-property">patience_counter</span> &gt;= <span class="code-property">self</span>.<span class="code-property">patience</span>:</span>
+<span class="code-line">        <span class="code-keyword">break</span></span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">If the model just got its best validation score ever...</p>
+              <p class="tl">Remember this as the new personal best.</p>
+              <p class="tl">Save a snapshot of the model&apos;s weights — we can come back to this.</p>
+              <p class="tl">Reset the patience counter — we&apos;re improving, keep going.</p>
+              <p class="tl">Otherwise (it didn&apos;t improve)...</p>
+              <p class="tl">Increment the &quot;no improvement&quot; counter.</p>
+              <p class="tl">If we haven&apos;t improved in 10 epochs in a row...</p>
+              <p class="tl">Stop training. We&apos;ve reached the ceiling.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 5: Quiz -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Apply your knowledge</h2>
+
+        <div class="quiz-container" id="quiz-module4">
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Right! The Transformer saves attention weights, which let you see which days the model focused on when predicting cognition. That&apos;s scientifically useful — if the model attends to high-exercise days, that&apos;s evidence those days matter."
+               data-explanation-wrong="Not quite. Both models predict cognitive scores. The key difference is interpretability — the Transformer saves attention weights that reveal WHICH days it found important. The LSTM just gives you a prediction without that explanation.">
+            <h3 class="quiz-question">You want to know which specific days in the 90-day fitness window were most predictive of cognitive scores. Which model gives you that insight — and why?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>FitnessLSTM — it reads day by day, so each day&apos;s contribution is clearer</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>FitnessTransformer — it saves attention weights that show which days the model focused on</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Both give equal insight into which days matter</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Exactly! Early stopping restores the best-ever model weights before returning. If you train for 50 epochs but the best validation performance was at epoch 23, the Trainer gives you the epoch-23 version — not the potentially overfit epoch-50 version."
+               data-explanation-wrong="Not quite. The Trainer saves a snapshot of the model at its best validation performance and restores it at the end — even if training continued past that point. So you always get the best model, not the most recent one.">
+            <h3 class="quiz-question">Training runs for 50 epochs. The best validation performance was at epoch 23. Training continued until epoch 35 (patience=12). What does the Trainer return at the end?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The model from epoch 50 — the most recent one</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The model from epoch 35 — when early stopping triggered</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The model from epoch 23 — the best validation performance ever achieved</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module4')">Check Answers</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module4')">Try Again</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</section>

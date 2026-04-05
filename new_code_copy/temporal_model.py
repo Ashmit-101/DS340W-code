@@ -287,11 +287,13 @@ class Trainer:
         weight_decay: float = 1e-4,
         patience: int = 10,
         max_epochs: int = 100,
+        verbose: bool = True,
     ):
         self.model = model.to(device)
         self.device = device
         self.max_epochs = max_epochs
         self.patience = patience
+        self.verbose = verbose
 
         self.criterion = nn.MSELoss()
         self.optimiser = AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
@@ -309,7 +311,7 @@ class Trainer:
         self,
         train_loader: DataLoader,
         val_loader: DataLoader,
-        verbose: bool = True,
+        verbose: bool | None = None,
     ) -> dict[str, list[float]]:
         """
         Run training loop.
@@ -320,6 +322,9 @@ class Trainer:
         history: dict[str, list[float]] = {
             "train_loss": [], "val_loss": [], "train_r2": [], "val_r2": []
         }
+        if verbose is None:
+            verbose = self.verbose
+
         best_val_loss = float("inf")
         patience_counter = 0
         best_state = None
@@ -500,7 +505,7 @@ def run_lag_analysis(
         path = RESULTS_DIR / "lag_analysis.png"
         fig.savefig(path, dpi=150)
         print(f"\nSaved lag analysis plot → {path}")
-    plt.show()
+    plt.close(fig)
 
     # ── plot: per-task R² vs lag ──
     fig2, ax2 = plt.subplots(figsize=(8, 4))
@@ -517,7 +522,7 @@ def run_lag_analysis(
         path2 = RESULTS_DIR / "lag_analysis_per_task.png"
         fig2.savefig(path2, dpi=150, bbox_inches="tight")
         print(f"Saved per-task lag plot → {path2}")
-    plt.show()
+    plt.close(fig2)
 
     return results
 
@@ -590,3 +595,24 @@ if __name__ == "__main__":
         print(f"  Test metrics: {metrics}")
 
     print("\nAll shape checks passed.")
+
+    # ── Lag analysis ──────────────────────────────────────────────────────────
+    print("\n" + "="*60)
+    print("Running lag analysis (LSTM, synthetic data) ...")
+    print("="*60)
+    lag_results = run_lag_analysis(
+        train_df=train_df,
+        test_df=test_df,
+        val_df=val_df,
+        behavioral_df=behavioral_df,
+        task_cols=task_names,
+        lag_values=[0, 7, 14, 21, 30],   # reduced set for quick demo
+        window_days=window_days,
+        model_type="lstm",
+        n_epochs=20,
+        batch_size=16,
+        device="cpu",
+        save_plot=True,
+    )
+    print("\nLag analysis complete.")
+    print(f"PNGs written to: {RESULTS_DIR}")

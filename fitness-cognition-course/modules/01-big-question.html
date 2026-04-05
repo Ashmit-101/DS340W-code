@@ -1,0 +1,228 @@
+<section class="module" id="module-1" style="background: var(--color-bg)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">01</span>
+      <h1 class="module-title">The Big Question</h1>
+      <p class="module-subtitle">Does how much you exercise today predict how well your brain works tomorrow?</p>
+    </header>
+
+    <div class="module-body">
+
+      <!-- Screen 1: What this project is -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">A research project hiding inside Python code</h2>
+        <p>This codebase is an extension of a published scientific paper — <em>Manning et al. (2022)</em> — that asked a simple but profound question:</p>
+
+        <div class="callout callout-info" style="margin: var(--space-6) 0;">
+          <div class="callout-icon">🧠</div>
+          <div class="callout-body">
+            <strong>The core question:</strong> Can we use wearable fitness data — steps, calories, sleep, BMI — to <em>predict</em> how well someone will perform on memory and cognitive tests?
+          </div>
+        </div>
+
+        <p>The original paper found correlations using simple statistics. This project goes further: it trains <span class="tooltip-term" data-tooltip="A type of machine learning model — software that learns patterns from examples, like a student who gets better at recognizing cats by seeing thousands of cat photos.">AI models</span> to see whether fitness data from <em>weeks before</em> a brain test can predict performance — suggesting exercise doesn&apos;t just correlate with cognition, it may actually <em>cause</em> it.</p>
+
+        <div class="pattern-cards stagger-children" style="margin-top: var(--space-8);">
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">📊</div>
+            <h3>The Input</h3>
+            <p>Daily fitness readings from wearables: steps, calories burned, active minutes, weight, BMI — tracked for hundreds of days per person.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">🧩</div>
+            <h3>The Output</h3>
+            <p>Scores on cognitive tasks: free recall accuracy, temporal clustering, semantic clustering — tests that measure memory and how the brain organizes information.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">⏱️</div>
+            <h3>The Twist</h3>
+            <p>Does fitness from <em>30 days ago</em> predict today&apos;s brain test score? 14 days? 90? This lag analysis is the project&apos;s key scientific contribution.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 2: The data — who are the participants -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Meet the participants: BFM_AMT_XXXX</h2>
+        <p>The data comes from real study participants, each identified by a code like <code>BFM_AMT_0005</code>. Each participant has their own <span class="tooltip-term" data-tooltip="A spreadsheet file — rows and columns, like an Excel file but saved in a plain text format that any program can read.">CSV file</span> full of daily health readings.</p>
+
+        <div class="flow-steps" style="margin: var(--space-8) 0;">
+          <div class="flow-step">
+            <div class="flow-step-number">1</div>
+            <div class="flow-step-content">
+              <strong>Fitness data</strong><br>
+              <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">Steps, calories, BMI, activity minutes — from wearables worn daily</span>
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-number">2</div>
+            <div class="flow-step-content">
+              <strong>Behavioral scores</strong><br>
+              <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">Results from memory and cognition tasks taken at the end of the study</span>
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-number">3</div>
+            <div class="flow-step-content">
+              <strong>The question</strong><br>
+              <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">Do patterns in the fitness data predict the cognitive scores?</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Aha moment:</strong> This is what data scientists call a <span class="tooltip-term" data-tooltip="A problem where the goal is to predict a number (like a test score) rather than a category (like yes/no). The model learns the relationship between inputs and the output number.">regression problem</span>. Given fitness inputs, predict a cognitive score output. The AI doesn&apos;t know the &quot;rules&quot; — it learns them from examples.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 3: The 4 files — the cast of characters -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The four files that make this work</h2>
+        <p>The entire project lives in four Python files. Think of them like stations on an assembly line — each one does one job, then hands off to the next.</p>
+
+        <div class="visual-file-tree animate-in" style="background: var(--color-bg-code); border-radius: var(--radius-md); padding: var(--space-6); margin: var(--space-6) 0; font-family: var(--font-mono); font-size: var(--text-sm); color: #CDD6F4;">
+          <div style="color: #6C7086; margin-bottom: var(--space-3);">new_code_copy/</div>
+          <div style="margin-left: var(--space-4);">
+            <div style="margin-bottom: var(--space-2);">
+              <span style="color: #A6E3A1;">📄 reading_data.py</span>
+              <span style="color: #6C7086; margin-left: var(--space-3);">← Load &amp; clean raw CSV files</span>
+            </div>
+            <div style="margin-bottom: var(--space-2);">
+              <span style="color: #89B4FA;">📄 temporal_dataset.py</span>
+              <span style="color: #6C7086; margin-left: var(--space-3);">← Slice data into time windows</span>
+            </div>
+            <div style="margin-bottom: var(--space-2);">
+              <span style="color: #CBA6F7;">📄 temporal_model.py</span>
+              <span style="color: #6C7086; margin-left: var(--space-3);">← Define &amp; train the AI models</span>
+            </div>
+            <div>
+              <span style="color: #F9E2AF;">📄 pkl_reading.py</span>
+              <span style="color: #6C7086; margin-left: var(--space-3);">← Load cognitive score files (.pkl)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pattern-cards stagger-children">
+          <div class="pattern-card animate-in" style="border-left: 3px solid #A6E3A1;">
+            <h3 style="color: #2D8B55;">reading_data.py</h3>
+            <p>The <strong>janitor</strong>. Raw data from wearables is messy — missing days, zeros that should be blanks, inconsistent formats. This file cleans everything up through a 7-step pipeline.</p>
+          </div>
+          <div class="pattern-card animate-in" style="border-left: 3px solid #89B4FA;">
+            <h3 style="color: #2A7B9B;">temporal_dataset.py</h3>
+            <p>The <strong>historian</strong>. Organizes clean data into overlapping 90-day windows — each one a snapshot of a person&apos;s fitness history that the AI will learn from.</p>
+          </div>
+          <div class="pattern-card animate-in" style="border-left: 3px solid #CBA6F7;">
+            <h3 style="color: #7B6DAA;">temporal_model.py</h3>
+            <p>The <strong>brain</strong>. Contains two AI architectures (LSTM and Transformer), a training loop, and the lag analysis experiment that is the project&apos;s scientific heart.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 4: The data flow overview -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The journey from wearable to prediction</h2>
+        <p>Imagine one participant — call her <strong>BFM_AMT_0005</strong>. She wore a fitness tracker for months. Here&apos;s what happens to her data:</p>
+
+        <div class="flow-animation" data-steps='[
+          {"highlight":"flow-actor-1","label":"BFM_AMT_0005.csv: 300+ rows of raw daily readings (steps, calories, BMI...)","packet":false},
+          {"highlight":"flow-actor-2","label":"reading_data.py cleans it: fill missing days, smooth noise, standardize values","packet":true,"from":"1","to":"2"},
+          {"highlight":"flow-actor-3","label":"temporal_dataset.py slices it into 90-day windows, each paired with her cognitive score","packet":true,"from":"2","to":"3"},
+          {"highlight":"flow-actor-4","label":"The AI model trains on thousands of these windows from all participants","packet":true,"from":"3","to":"4"},
+          {"highlight":"flow-actor-5","label":"The trained model predicts: given any 90-day fitness window, what cognitive score results?","packet":true,"from":"4","to":"5"}
+        ]'>
+          <div class="flow-actors">
+            <div class="flow-actor" id="flow-actor-1">
+              <div class="flow-actor-icon">📁</div>
+              <div class="flow-actor-name">Raw CSV</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-2">
+              <div class="flow-actor-icon">🧹</div>
+              <div class="flow-actor-name">Clean Data</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-3">
+              <div class="flow-actor-icon">🪟</div>
+              <div class="flow-actor-name">Windows</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-4">
+              <div class="flow-actor-icon">🤖</div>
+              <div class="flow-actor-name">AI Training</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-5">
+              <div class="flow-actor-icon">🎯</div>
+              <div class="flow-actor-name">Prediction</div>
+            </div>
+          </div>
+          <div class="flow-status"></div>
+          <div class="flow-controls">
+            <button class="btn flow-next-btn">Next Step →</button>
+            <button class="btn flow-reset-btn">Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 5: Quiz -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Check your understanding</h2>
+
+        <div class="quiz-container" id="quiz-module1">
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Exactly! The lag analysis is what makes this scientifically interesting — if fitness from BEFORE the test predicts the score, that suggests a causal relationship, not just correlation."
+               data-explanation-wrong="Not quite. The original paper just measured correlation. The key scientific contribution here is testing whether fitness data from BEFORE a cognitive test can predict the outcome — the lag analysis.">
+            <h3 class="quiz-question">What makes this project scientifically interesting compared to just plotting exercise vs. brain scores on a chart?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>It uses more participants</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>It uses Python instead of Excel</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>It tests whether fitness data from BEFORE the brain test can predict performance — suggesting cause, not just correlation</span>
+              </button>
+              <button class="quiz-option" data-value="option-d" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>It measures more types of exercise</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Correct! temporal_dataset.py is the historian — it takes clean data and organizes it into time windows the AI can learn from. The model file actually runs the training."
+               data-explanation-wrong="Close, but not quite. reading_data.py is for cleaning, temporal_model.py is for training. temporal_dataset.py is the in-between step — it packages clean data into the 90-day windows that get fed to the model.">
+            <h3 class="quiz-question">You want to change how many days of fitness history the AI sees before making a prediction. Which file would you ask your AI coding assistant to modify?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>reading_data.py — it handles all the data</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>temporal_dataset.py — it controls window sizes</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>temporal_model.py — it trains the AI</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module1')">Check Answers</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module1')">Try Again</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</section>

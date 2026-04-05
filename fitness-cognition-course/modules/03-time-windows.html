@@ -1,0 +1,210 @@
+<section class="module" id="module-3" style="background: var(--color-bg)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">03</span>
+      <h1 class="module-title">Time Windows</h1>
+      <p class="module-subtitle">How 300 days of data becomes thousands of training examples — the sliding window technique.</p>
+    </header>
+
+    <div class="module-body">
+
+      <!-- Screen 1: The problem — one score, many days -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The core challenge: one score, hundreds of days</h2>
+        <p>Here&apos;s the puzzle. Each participant has one cognitive score (taken at the end of the study). But they have 300+ daily rows of fitness data. How do you train an AI on this?</p>
+
+        <div class="callout callout-info" style="margin: var(--space-6) 0;">
+          <div class="callout-icon">🎞️</div>
+          <div class="callout-body">
+            <strong>The film reel metaphor:</strong> Think of each participant&apos;s fitness history like a film reel — 300 frames. The AI can&apos;t watch all 300 frames at once. Instead, it watches a 90-frame clip at a time. The clip slides forward one frame at a time, and each 90-frame clip is one <span class="tooltip-term" data-tooltip="A chunk of consecutive time-series data used as input for a model. Like a moving spotlight that illuminates 90 consecutive days at a time as it slides across the full timeline.">training window</span>.
+          </div>
+        </div>
+
+        <div style="background: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-6); margin: var(--space-6) 0; border: 1px solid var(--color-border);">
+          <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: var(--space-3);">Example: One participant with 200 days, window = 90 days, stride = 1</p>
+          <div style="position: relative; height: 80px; background: var(--color-bg); border-radius: var(--radius-sm); overflow: hidden;">
+            <!-- Timeline bar -->
+            <div style="position: absolute; top: 35px; left: 20px; right: 20px; height: 10px; background: var(--color-border); border-radius: 5px;"></div>
+            <!-- Window 1 -->
+            <div style="position: absolute; top: 30px; left: 20px; width: 45%; height: 20px; background: var(--color-accent); opacity: 0.3; border-radius: 4px;"></div>
+            <!-- Window label -->
+            <div style="position: absolute; top: 10px; left: 20px; font-size: var(--text-xs); color: var(--color-accent); font-family: var(--font-mono);">Window 1 (days 1–90)</div>
+            <!-- Day markers -->
+            <div style="position: absolute; bottom: 10px; left: 20px; font-size: var(--text-xs); color: var(--color-text-muted); font-family: var(--font-mono);">Day 1</div>
+            <div style="position: absolute; bottom: 10px; right: 20px; font-size: var(--text-xs); color: var(--color-text-muted); font-family: var(--font-mono);">Day 200</div>
+          </div>
+          <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-top: var(--space-3); text-align: center;">→ Window slides forward, creating 110 separate training examples from one participant</p>
+        </div>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Why this matters:</strong> Instead of having ~100 participants × 1 score each = 100 training examples, you get 100 participants × ~100 windows each = <strong>10,000+ training examples</strong>. The AI gets much more to learn from.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 2: The Dataset class -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">FitnessSequenceDataset — the historian</h2>
+        <p>The file <code>temporal_dataset.py</code> defines a <span class="tooltip-term" data-tooltip="In PyTorch (a popular AI library), a Dataset is a class that knows how many examples exist and how to return example number N on demand. It&apos;s like a library that knows it has 10,000 books and can hand you book #4,721 whenever asked.">Dataset class</span> called <code>FitnessSequenceDataset</code>. It does three things:</p>
+
+        <div class="flow-steps" style="margin: var(--space-8) 0;">
+          <div class="flow-step">
+            <div class="flow-step-number">1</div>
+            <div class="flow-step-content">
+              <strong>Match participants</strong><br>
+              <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">Find participants who appear in BOTH the fitness data AND the cognitive scores file</span>
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-number">2</div>
+            <div class="flow-step-content">
+              <strong>Slice windows</strong><br>
+              <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">For each participant, slide a 90-day window across their full history</span>
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-number">3</div>
+            <div class="flow-step-content">
+              <strong>Return (X, y) pairs</strong><br>
+              <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">Each window X = 90 days of fitness, y = that participant&apos;s cognitive score</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="translation-block animate-in">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">for</span> <span class="code-property">end</span> <span class="code-keyword">in</span> <span class="code-function">range</span>(<span class="code-property">window_days</span>, <span class="code-property">end_max</span>, <span class="code-property">stride</span>):</span>
+<span class="code-line">    <span class="code-property">window</span> = <span class="code-property">seq</span>[<span class="code-property">end</span> - <span class="code-property">window_days</span> : <span class="code-property">end</span>]</span>
+<span class="code-line">    <span class="code-property">self</span>.<span class="code-property">samples</span>.<span class="code-function">append</span>((<span class="code-property">window</span>, <span class="code-property">y</span>, <span class="code-property">pid</span>))</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Loop through all possible end-points for a window, moving one day at a time.</p>
+              <p class="tl">Grab the 90 days ending at this point — the &quot;film clip&quot; ending here.</p>
+              <p class="tl">Save this window + the participant&apos;s cognitive score as one training example.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 3: What a single sample looks like -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">What one training example looks like</h2>
+        <p>Each sample the AI sees is an <span class="tooltip-term" data-tooltip="A multi-dimensional grid of numbers. Like a spreadsheet, but for AI. A 90×15 tensor is a grid with 90 rows (days) and 15 columns (features). AI models natively work with tensors.">tensor</span> — a 2D grid of numbers:</p>
+
+        <div style="background: var(--color-bg-code); border-radius: var(--radius-md); padding: var(--space-6); margin: var(--space-6) 0; font-family: var(--font-mono); font-size: var(--text-sm); color: #CDD6F4; overflow: hidden;">
+          <div style="color: #6C7086; margin-bottom: var(--space-3);"># X: the input (90 days × 15 features)</div>
+          <div style="display: grid; grid-template-columns: auto 1fr; gap: var(--space-2) var(--space-4); align-items: center; margin-bottom: var(--space-4);">
+            <span style="color: #F9E2AF;">Day 1:</span><span style="color: #A6E3A1;">[ 0.42, -0.81, 1.23, 0.07, -0.55, ... 15 values ]</span>
+            <span style="color: #F9E2AF;">Day 2:</span><span style="color: #A6E3A1;">[ 0.51, -0.79, 1.19, 0.11, -0.48, ... 15 values ]</span>
+            <span style="color: #6C7086;">...   </span><span style="color: #6C7086;">( 88 more days )</span>
+            <span style="color: #F9E2AF;">Day 90:</span><span style="color: #A6E3A1;">[ 0.89, -0.32, 0.94, 0.55, 0.12, ... 15 values ]</span>
+          </div>
+          <div style="color: #6C7086; margin-bottom: var(--space-2);"># y: the target (3 cognitive scores)</div>
+          <span style="color: #CBA6F7;">[ 0.73, 0.61, 0.44 ]</span>
+          <span style="color: #6C7086; margin-left: var(--space-3);"># free_recall, nat_recall, temporal_clustering</span>
+        </div>
+
+        <p>The AI&apos;s job: look at the 90×15 grid of fitness numbers and predict the 3 cognitive scores. Every 90-day window from every participant teaches the model something.</p>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Vocabulary moment:</strong> X is called the <span class="tooltip-term" data-tooltip="The input data — what goes INTO the model. Like the question on a test.">features</span> and y is called the <span class="tooltip-term" data-tooltip="The output the model tries to predict — what you want to get right. Like the answer on a test.">labels</span> (or targets). In every machine learning project, there is an X and a y. Finding good X features that predict y is half the art of data science.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 4: The lag parameter -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The lag parameter — the scientific question in code form</h2>
+        <p>Here&apos;s where the science gets interesting. The <code>lag_days</code> parameter in the dataset lets you say: &quot;I want the fitness window to END some number of days <em>before</em> the cognitive assessment.&quot;</p>
+
+        <div style="background: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-6); margin: var(--space-6) 0; border: 1px solid var(--color-border);">
+          <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+            <div>
+              <span style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-accent);">lag_days = 0</span>
+              <p style="margin: var(--space-1) 0; font-size: var(--text-sm);">Fitness window ends the day of the cognitive test. Current fitness predicts current cognition.</p>
+            </div>
+            <div>
+              <span style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-actor-3);">lag_days = 14</span>
+              <p style="margin: var(--space-1) 0; font-size: var(--text-sm);">Fitness window ends 2 weeks before the test. Did fitness 2 weeks ago predict today&apos;s score?</p>
+            </div>
+            <div>
+              <span style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-actor-5);">lag_days = 90</span>
+              <p style="margin: var(--space-1) 0; font-size: var(--text-sm);">Fitness window ends 3 months before the test. Long-term fitness patterns as a predictor.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-icon">🔬</div>
+          <div class="callout-body">
+            <strong>Why this matters scientifically:</strong> If the model predicts best at lag=14 (2 weeks before), that suggests exercise affects the brain with a roughly 2-week delay. This kind of finding can guide real-world recommendations — "exercise now for brain benefits in two weeks."
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 5: Quiz -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Test your understanding</h2>
+
+        <div class="quiz-container" id="quiz-module3">
+          <div class="quiz-question-block"
+               data-correct="option-a"
+               data-explanation-right="Exactly! If the model predicts best at lag=0, it means concurrent fitness (on the day of) predicts cognition best. That&apos;s correlation. A model that peaks at lag=30 suggests fitness from 30 days prior is the better predictor — that&apos;s closer to evidence of a causal delay."
+               data-explanation-wrong="Not quite. lag=0 means no time gap — we&apos;re measuring fitness at the same time as the test. If we&apos;re trying to show that exercise CAUSES cognitive improvement (with a delay), we actually WANT a non-zero lag to show the best prediction.">
+            <h3 class="quiz-question">The model trained with lag_days=0 performs just as well as lag_days=30. What does this suggest about the relationship between exercise and cognition?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Exercise and cognition might be correlated but not necessarily causal — concurrent fitness predicts just as well as past fitness</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The model is broken and needs to be retrained</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The window_days parameter is too large</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Correct! Each window is paired with that participant&apos;s cognitive score — all windows from the same person share the same y label. This is fine for the model to learn from, though it means the samples are not fully independent."
+               data-explanation-wrong="Not quite. All windows from one participant share the same cognitive score (y). So window 1–90, window 2–91, etc., all point to the same y. The model learns: &quot;what fitness patterns in this person&apos;s history are associated with their cognitive score?&quot;">
+            <h3 class="quiz-question">Participant BFM_AMT_0005 has 200 days of data. The dataset creates ~110 windows. What cognitive score (y) is each window paired with?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>A different score for each window, sampled from that time period</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The same cognitive score — their end-of-study test result — for all 110 windows</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The average cognitive score across all participants</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module3')">Check Answers</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module3')">Try Again</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</section>

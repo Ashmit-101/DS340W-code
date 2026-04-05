@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fitness → Cognition: How This Research Project Works</title>
+
+  <!-- Google Fonts: Bricolage Grotesque · DM Sans · JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    :root {
+      --color-accent:       #2A7B9B;
+      --color-accent-hover: #1F6280;
+      --color-accent-light: #E4F2F7;
+      --color-accent-muted: #5A9DB8;
+    }
+  </style>
+
+  <script src="main.js" defer></script>
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    <div class="nav-inner">
+      <span class="nav-title">Fitness → Cognition</span>
+      <div class="nav-dots" id="nav-dots" role="tablist">
+        <button class="nav-dot" data-target="module-1" data-tooltip="The Big Question" role="tab" aria-label="Module 1: The Big Question"></button>
+        <button class="nav-dot" data-target="module-2" data-tooltip="Cleaning the Data" role="tab" aria-label="Module 2: Cleaning the Data"></button>
+        <button class="nav-dot" data-target="module-3" data-tooltip="Time Windows" role="tab" aria-label="Module 3: Time Windows"></button>
+        <button class="nav-dot" data-target="module-4" data-tooltip="Teaching AI to Read Time" role="tab" aria-label="Module 4: Teaching AI to Read Time"></button>
+        <button class="nav-dot" data-target="module-5" data-tooltip="The Lag Experiment" role="tab" aria-label="Module 5: The Lag Experiment"></button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+    <!-- modules/*.html content is assembled here by build.sh -->
+<section class="module" id="module-1" style="background: var(--color-bg)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">01</span>
+      <h1 class="module-title">The Big Question</h1>
+      <p class="module-subtitle">Does how much you exercise today predict how well your brain works tomorrow?</p>
+    </header>
+
+    <div class="module-body">
+
+      <!-- Screen 1: What this project is -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">A research project hiding inside Python code</h2>
+        <p>This codebase is an extension of a published scientific paper — <em>Manning et al. (2022)</em> — that asked a simple but profound question:</p>
+
+        <div class="callout callout-info" style="margin: var(--space-6) 0;">
+          <div class="callout-icon">🧠</div>
+          <div class="callout-body">
+            <strong>The core question:</strong> Can we use wearable fitness data — steps, calories, sleep, BMI — to <em>predict</em> how well someone will perform on memory and cognitive tests?
+          </div>
+        </div>
+
+        <p>The original paper found correlations using simple statistics. This project goes further: it trains <span class="tooltip-term" data-tooltip="A type of machine learning model — software that learns patterns from examples, like a student who gets better at recognizing cats by seeing thousands of cat photos.">AI models</span> to see whether fitness data from <em>weeks before</em> a brain test can predict performance — suggesting exercise doesn&apos;t just correlate with cognition, it may actually <em>cause</em> it.</p>
+
+        <div class="pattern-cards stagger-children" style="margin-top: var(--space-8);">
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">📊</div>
+            <h3>The Input</h3>
+            <p>Daily fitness readings from wearables: steps, calories burned, active minutes, weight, BMI — tracked for hundreds of days per person.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">🧩</div>
+            <h3>The Output</h3>
+            <p>Scores on cognitive tasks: free recall accuracy, temporal clustering, semantic clustering — tests that measure memory and how the brain organizes information.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">⏱️</div>
+            <h3>The Twist</h3>
+            <p>Does fitness from <em>30 days ago</em> predict today&apos;s brain test score? 14 days? 90? This lag analysis is the project&apos;s key scientific contribution.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 2: The data — who are the participants -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Meet the participants: BFM_AMT_XXXX</h2>
+        <p>The data comes from real study participants, each identified by a code like <code>BFM_AMT_0005</code>. Each participant has their own <span class="tooltip-term" data-tooltip="A spreadsheet file — rows and columns, like an Excel file but saved in a plain text format that any program can read.">CSV file</span> full of daily health readings.</p>
+
+        <div class="flow-steps" style="margin: var(--space-8) 0;">
+          <div class="flow-step">
+            <div class="flow-step-number">1</div>
+            <div class="flow-step-content">
+              <strong>Fitness data</strong><br>
+              <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">Steps, calories, BMI, activity minutes — from wearables worn daily</span>
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-number">2</div>
+            <div class="flow-step-content">
+              <strong>Behavioral scores</strong><br>
+              <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">Results from memory and cognition tasks taken at the end of the study</span>
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-number">3</div>
+            <div class="flow-step-content">
+              <strong>The question</strong><br>
+              <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">Do patterns in the fitness data predict the cognitive scores?</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Aha moment:</strong> This is what data scientists call a <span class="tooltip-term" data-tooltip="A problem where the goal is to predict a number (like a test score) rather than a category (like yes/no). The model learns the relationship between inputs and the output number.">regression problem</span>. Given fitness inputs, predict a cognitive score output. The AI doesn&apos;t know the &quot;rules&quot; — it learns them from examples.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 3: The 4 files — the cast of characters -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The four files that make this work</h2>
+        <p>The entire project lives in four Python files. Think of them like stations on an assembly line — each one does one job, then hands off to the next.</p>
+
+        <div class="visual-file-tree animate-in" style="background: var(--color-bg-code); border-radius: var(--radius-md); padding: var(--space-6); margin: var(--space-6) 0; font-family: var(--font-mono); font-size: var(--text-sm); color: #CDD6F4;">
+          <div style="color: #6C7086; margin-bottom: var(--space-3);">new_code_copy/</div>
+          <div style="margin-left: var(--space-4);">
+            <div style="margin-bottom: var(--space-2);">
+              <span style="color: #A6E3A1;">📄 reading_data.py</span>
+              <span style="color: #6C7086; margin-left: var(--space-3);">← Load &amp; clean raw CSV files</span>
+            </div>
+            <div style="margin-bottom: var(--space-2);">
+              <span style="color: #89B4FA;">📄 temporal_dataset.py</span>
+              <span style="color: #6C7086; margin-left: var(--space-3);">← Slice data into time windows</span>
+            </div>
+            <div style="margin-bottom: var(--space-2);">
+              <span style="color: #CBA6F7;">📄 temporal_model.py</span>
+              <span style="color: #6C7086; margin-left: var(--space-3);">← Define &amp; train the AI models</span>
+            </div>
+            <div>
+              <span style="color: #F9E2AF;">📄 pkl_reading.py</span>
+              <span style="color: #6C7086; margin-left: var(--space-3);">← Load cognitive score files (.pkl)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pattern-cards stagger-children">
+          <div class="pattern-card animate-in" style="border-left: 3px solid #A6E3A1;">
+            <h3 style="color: #2D8B55;">reading_data.py</h3>
+            <p>The <strong>janitor</strong>. Raw data from wearables is messy — missing days, zeros that should be blanks, inconsistent formats. This file cleans everything up through a 7-step pipeline.</p>
+          </div>
+          <div class="pattern-card animate-in" style="border-left: 3px solid #89B4FA;">
+            <h3 style="color: #2A7B9B;">temporal_dataset.py</h3>
+            <p>The <strong>historian</strong>. Organizes clean data into overlapping 90-day windows — each one a snapshot of a person&apos;s fitness history that the AI will learn from.</p>
+          </div>
+          <div class="pattern-card animate-in" style="border-left: 3px solid #CBA6F7;">
+            <h3 style="color: #7B6DAA;">temporal_model.py</h3>
+            <p>The <strong>brain</strong>. Contains two AI architectures (LSTM and Transformer), a training loop, and the lag analysis experiment that is the project&apos;s scientific heart.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 4: The data flow overview -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The journey from wearable to prediction</h2>
+        <p>Imagine one participant — call her <strong>BFM_AMT_0005</strong>. She wore a fitness tracker for months. Here&apos;s what happens to her data:</p>
+
+        <div class="flow-animation" data-steps='[
+          {"highlight":"flow-actor-1","label":"BFM_AMT_0005.csv: 300+ rows of raw daily readings (steps, calories, BMI...)","packet":false},
+          {"highlight":"flow-actor-2","label":"reading_data.py cleans it: fill missing days, smooth noise, standardize values","packet":true,"from":"1","to":"2"},
+          {"highlight":"flow-actor-3","label":"temporal_dataset.py slices it into 90-day windows, each paired with her cognitive score","packet":true,"from":"2","to":"3"},
+          {"highlight":"flow-actor-4","label":"The AI model trains on thousands of these windows from all participants","packet":true,"from":"3","to":"4"},
+          {"highlight":"flow-actor-5","label":"The trained model predicts: given any 90-day fitness window, what cognitive score results?","packet":true,"from":"4","to":"5"}
+        ]'>
+          <div class="flow-actors">
+            <div class="flow-actor" id="flow-actor-1">
+              <div class="flow-actor-icon">📁</div>
+              <div class="flow-actor-name">Raw CSV</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-2">
+              <div class="flow-actor-icon">🧹</div>
+              <div class="flow-actor-name">Clean Data</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-3">
+              <div class="flow-actor-icon">🪟</div>
+              <div class="flow-actor-name">Windows</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-4">
+              <div class="flow-actor-icon">🤖</div>
+              <div class="flow-actor-name">AI Training</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-5">
+              <div class="flow-actor-icon">🎯</div>
+              <div class="flow-actor-name">Prediction</div>
+            </div>
+          </div>
+          <div class="flow-status"></div>
+          <div class="flow-controls">
+            <button class="btn flow-next-btn">Next Step →</button>
+            <button class="btn flow-reset-btn">Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 5: Quiz -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Check your understanding</h2>
+
+        <div class="quiz-container" id="quiz-module1">
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Exactly! The lag analysis is what makes this scientifically interesting — if fitness from BEFORE the test predicts the score, that suggests a causal relationship, not just correlation."
+               data-explanation-wrong="Not quite. The original paper just measured correlation. The key scientific contribution here is testing whether fitness data from BEFORE a cognitive test can predict the outcome — the lag analysis.">
+            <h3 class="quiz-question">What makes this project scientifically interesting compared to just plotting exercise vs. brain scores on a chart?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>It uses more participants</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>It uses Python instead of Excel</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>It tests whether fitness data from BEFORE the brain test can predict performance — suggesting cause, not just correlation</span>
+              </button>
+              <button class="quiz-option" data-value="option-d" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>It measures more types of exercise</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Correct! temporal_dataset.py is the historian — it takes clean data and organizes it into time windows the AI can learn from. The model file actually runs the training."
+               data-explanation-wrong="Close, but not quite. reading_data.py is for cleaning, temporal_model.py is for training. temporal_dataset.py is the in-between step — it packages clean data into the 90-day windows that get fed to the model.">
+            <h3 class="quiz-question">You want to change how many days of fitness history the AI sees before making a prediction. Which file would you ask your AI coding assistant to modify?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>reading_data.py — it handles all the data</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>temporal_dataset.py — it controls window sizes</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>temporal_model.py — it trains the AI</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module1')">Check Answers</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module1')">Try Again</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</section>
+<section class="module" id="module-2" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">02</span>
+      <h1 class="module-title">Cleaning the Mess</h1>
+      <p class="module-subtitle">Raw wearable data is like a diary written in crayon in the rain — beautiful intentions, brutal readability.</p>
+    </header>
+
+    <div class="module-body">
+
+      <!-- Screen 1: Why raw data is messy -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The problem with real-world data</h2>
+        <p>Think of wearable data like a paper attendance sheet for a class of 100 people. Some days people forgot to sign in. Some people wrote &quot;0&quot; when they meant &quot;didn&apos;t take my watch off.&quot; Some people missed entire weeks. The raw data is full of holes and errors — and an AI fed garbage will learn garbage.</p>
+
+        <div class="callout callout-info">
+          <div class="callout-icon">📝</div>
+          <div class="callout-body">
+            <strong>What the raw data looks like:</strong> Each participant has a <span class="tooltip-term" data-tooltip="A spreadsheet file — rows and columns. CSV stands for Comma-Separated Values, a plain text format that every data tool can read.">CSV file</span> with one row per day per measurement. But there are gaps (missed days), impossible values (weight = 0), and no guarantee every feature was recorded on the same days.
+          </div>
+        </div>
+
+        <p>The file <code>reading_data.py</code> runs a strict <strong>7-step pipeline</strong> to fix all of this before a single number touches the AI model.</p>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Vocabulary moment:</strong> This process — loading, filtering, fixing, and transforming raw data — is called <span class="tooltip-term" data-tooltip="The process of cleaning and transforming raw data into a usable format. Think of it as mise en place in cooking: prepping all your ingredients before you start cooking. Also called ETL (Extract, Transform, Load) in some contexts.">data preprocessing</span>. It&apos;s often 80% of the work in any machine learning project.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 2: The 13 features -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The 13 features — what gets measured</h2>
+        <p>The <span class="tooltip-term" data-tooltip="In machine learning, a feature is any measurable input — a column of data the model can use to make predictions. Like the ingredients in a recipe: each one gives the model information to work with.">features</span> are the 13 health metrics tracked for each participant, each day:</p>
+
+        <div class="translation-block animate-in">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-property">FEATURE_COLS</span> = [</span>
+<span class="code-line">    <span class="code-string">"bmi"</span>, <span class="code-string">"bodyfat"</span>, <span class="code-string">"cal"</span>, <span class="code-string">"cal_bmr"</span>,</span>
+<span class="code-line">    <span class="code-string">"distance"</span>, <span class="code-string">"fair_act_mins"</span>,</span>
+<span class="code-line">    <span class="code-string">"food_cal_log"</span>, <span class="code-string">"light_act_mins"</span>,</span>
+<span class="code-line">    <span class="code-string">"sed_mins"</span>, <span class="code-string">"steps"</span>,</span>
+<span class="code-line">    <span class="code-string">"very_act_mins"</span>, <span class="code-string">"water_log"</span>, <span class="code-string">"weight"</span>,</span>
+<span class="code-line">]</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">This is a list of the 13 columns we care about.</p>
+              <p class="tl">Body measurements: body mass index, body fat percentage, calorie burn, basal metabolic rate.</p>
+              <p class="tl">Activity: distance traveled, fairly-active minutes.</p>
+              <p class="tl">Nutrition &amp; light movement: food calories logged, light-active minutes.</p>
+              <p class="tl">Sedentary minutes, steps taken.</p>
+              <p class="tl">Very-active minutes, water logged, and current weight.</p>
+              <p class="tl">End of the list.</p>
+            </div>
+          </div>
+        </div>
+
+        <p>These are grouped into three categories, which matters for how gaps get filled later:</p>
+        <div class="pattern-cards stagger-children">
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">🏃</div>
+            <h3>Activity Metrics</h3>
+            <p>Steps, distance, calories, active minutes. If you didn&apos;t log activity, it was probably 0 — so missing values get filled with zero.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">⚖️</div>
+            <h3>Physical State</h3>
+            <p>Weight, BMI, body fat. These don&apos;t change overnight — so missing days get filled by carrying the last known value forward.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">🥗</div>
+            <h3>Nutrition</h3>
+            <p>Food calories, water. Like activity — if you didn&apos;t log it, zero is the safe assumption.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 3: The 7-step pipeline as a group chat -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The 7-step pipeline in action</h2>
+        <p>Imagine the raw data walking into a hospital for a check-up. Here&apos;s what each step does to it:</p>
+
+        <div class="chat-window" id="chat-pipeline">
+          <div class="chat-messages">
+            <div class="chat-message" data-msg="0" data-sender="raw-data" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-4)">📁</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-4)">Raw Data</span>
+                <p>Hi, I just arrived! I have 300 days for BFM_AMT_0005 but... I&apos;m missing Feb 4-12 entirely. Also some of my weight values are 0.0, and my dates aren&apos;t in a consistent format.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="1" data-sender="step0" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-1)">🔍</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-1)">Step 0: Quality Gate</span>
+                <p>First, I check: does this participant have at least 100 days where 5+ features were recorded? If not, they get dropped from the study entirely. Sorry, but garbage-in, garbage-out.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="2" data-sender="step1" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-2)">📅</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-2)">Step 1: Daily Resampling</span>
+                <p>I insert explicit NaN rows for every missing date. So instead of jumping from Feb 3 to Feb 13, you now have 10 empty rows. Gaps become visible — not hidden.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="3" data-sender="step2" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-3)">🔧</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-3)">Step 2: Fix Impossible Zeros</span>
+                <p>Nobody weighs 0 kg. I convert all zeros in weight, BMI, and body fat to NaN (empty). They&apos;re clearly recording errors, not real measurements.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="4" data-sender="step3" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-5)">⏩</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-5)">Step 3: Forward Fill Physical Metrics</span>
+                <p>For weight, BMI, and body fat: carry the last known value forward until a new measurement appears. Your weight Monday is probably very close to Tuesday&apos;s — close enough.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="5" data-sender="step4" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-1)">〰️</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-1)">Step 4: 7-Day Smoothing</span>
+                <p>I apply a rolling 7-day average to every feature. One terrible Tuesday doesn&apos;t tank the whole week&apos;s data. This reduces noise while preserving real trends.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="6" data-sender="step5" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-2)">🩹</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-2)">Step 5: Final Gap Fill</span>
+                <p>Any activity/nutrition NaNs left? Fill with 0. Any physical metric NaNs left? Fill with the average from ALL training participants. No blanks allowed.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="7" data-sender="step6" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-3)">📈</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-3)">Step 6: Relative Change Features</span>
+                <p>I compute new columns: your 7-day average steps divided by your 30-day average steps. This captures <em>trends</em> (are you getting more active?) not just absolute values.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="8" data-sender="step7" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-5)">⚖️</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-5)">Step 7: Standardization</span>
+                <p>Finally — I rescale every feature so they all have the same scale. 10,000 steps and 70 kg are very different numbers; the AI treats them equally after this. Crucially: I learn the scale from TRAINING data only, then apply it to test data.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="9" data-sender="raw-data" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-4)">✅</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-4)">Clean Data</span>
+                <p>I came in as a messy CSV. I leave as a consistent, complete, standardized table — ready for the AI. Every day accounted for. Every number on the same scale. No blanks.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-typing" id="chat-pipeline-typing" style="display:none">
+            <div class="chat-avatar" id="chat-pipeline-typing-avatar">?</div>
+            <div class="chat-typing-dots">
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+            </div>
+          </div>
+
+          <div class="chat-controls">
+            <button class="btn chat-next-btn">Next →</button>
+            <button class="btn chat-all-btn">Play All</button>
+            <button class="btn chat-reset-btn">Replay</button>
+            <span class="chat-progress"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 4: The leakage-free standardization -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The most important rule: no data leakage</h2>
+        <p>Here&apos;s a subtle but critical point. When you standardize data, you need to calculate the average and spread of the numbers. But <em>whose</em> average do you use?</p>
+
+        <div class="callout callout-info" style="margin: var(--space-6) 0;">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-body">
+            <strong>The temptation:</strong> Calculate the average from all participants (train + test). It&apos;s more data, so it seems better.<br><br>
+            <strong>The problem:</strong> The model would indirectly &quot;see&quot; the test participants during training — like a student getting the exam questions before the test. This is called <span class="tooltip-term" data-tooltip="When information from the test set accidentally leaks into the training process, making the model appear better than it really is. Like studying with the actual exam answers — you look great, but you haven&apos;t actually learned anything.">data leakage</span>, and it makes your results look falsely good.
+          </div>
+        </div>
+
+        <div class="translation-block animate-in">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-property">scaler</span> = <span class="code-function">StandardScaler</span>()</span>
+<span class="code-line"><span class="code-property">scaler</span>.<span class="code-function">fit</span>(<span class="code-property">train_df</span>[<span class="code-property">feature_cols</span>])</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-property">train_scaled</span>[<span class="code-property">feature_cols</span>] = <span class="code-property">scaler</span>.<span class="code-function">transform</span>(<span class="code-property">train_df</span>[...])</span>
+<span class="code-line"><span class="code-property">test_scaled</span>[<span class="code-property">feature_cols</span>] = <span class="code-property">scaler</span>.<span class="code-function">transform</span>(<span class="code-property">test_df</span>[...])</span>
+<span class="code-line"><span class="code-property">val_scaled</span>[<span class="code-property">feature_cols</span>] = <span class="code-property">scaler</span>.<span class="code-function">transform</span>(<span class="code-property">val_df</span>[...])</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Create a scaling calculator (StandardScaler).</p>
+              <p class="tl">ONLY study the training data to learn the average and spread. Never peek at test data here.</p>
+              <p class="tl">&nbsp;</p>
+              <p class="tl">Apply that training-learned scale to normalize the training set.</p>
+              <p class="tl">Apply the SAME scale to test data — using training stats, not test stats.</p>
+              <p class="tl">Same for validation. Everything calibrated to the training set&apos;s reality.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Why this matters for you:</strong> If you ever ask an AI assistant to add a new preprocessing step, always ask: &quot;Does this step accidentally use information from the test set?&quot; If yes, you have data leakage. This is one of the most common mistakes in machine learning projects.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 5: Quiz -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Apply what you&apos;ve learned</h2>
+
+        <div class="quiz-container" id="quiz-module2">
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Correct! Weight changes slowly, so carrying the last known value forward (forward fill) is a safe assumption. Activity metrics get filled with 0 because if there&apos;s no log, there was probably no activity."
+               data-explanation-wrong="Not quite. The code treats these differently on purpose: physical state metrics (weight, BMI) get forward-filled because the value likely persists, while activity metrics get filled with 0 because no log likely means no activity.">
+            <h3 class="quiz-question">A participant skipped logging for a week. Their weight for those days is missing. What does the pipeline do — and why?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Fill with 0 — same as activity metrics</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Carry the last known weight forward — weight doesn&apos;t change overnight</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Drop that participant from the study entirely</span>
+              </button>
+              <button class="quiz-option" data-value="option-d" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Ask the participant to fill in their weight manually</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Exactly! Standardization must be fit on training data only, then applied to all splits. Using test data to compute the scale would let test statistics influence training — that&apos;s data leakage."
+               data-explanation-wrong="Not quite. The right answer is to fit the scaler on training data only, then apply it to test and validation. Using all data together would let the model indirectly &apos;see&apos; test participants during training.">
+            <h3 class="quiz-question">You want to add a new type of scaling to the pipeline. Your AI coding assistant suggests fitting the scaler on all participants combined (train + test + val) for a more accurate scale. What&apos;s the problem?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>It would take too long to compute</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The scale would be less accurate with more data</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Test data statistics would leak into training — making results look better than they really are</span>
+              </button>
+              <button class="quiz-option" data-value="option-d" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Nothing — this is actually the better approach</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module2')">Check Answers</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module2')">Try Again</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</section>
+<section class="module" id="module-3" style="background: var(--color-bg)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">03</span>
+      <h1 class="module-title">Time Windows</h1>
+      <p class="module-subtitle">How 300 days of data becomes thousands of training examples — the sliding window technique.</p>
+    </header>
+
+    <div class="module-body">
+
+      <!-- Screen 1: The problem — one score, many days -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The core challenge: one score, hundreds of days</h2>
+        <p>Here&apos;s the puzzle. Each participant has one cognitive score (taken at the end of the study). But they have 300+ daily rows of fitness data. How do you train an AI on this?</p>
+
+        <div class="callout callout-info" style="margin: var(--space-6) 0;">
+          <div class="callout-icon">🎞️</div>
+          <div class="callout-body">
+            <strong>The film reel metaphor:</strong> Think of each participant&apos;s fitness history like a film reel — 300 frames. The AI can&apos;t watch all 300 frames at once. Instead, it watches a 90-frame clip at a time. The clip slides forward one frame at a time, and each 90-frame clip is one <span class="tooltip-term" data-tooltip="A chunk of consecutive time-series data used as input for a model. Like a moving spotlight that illuminates 90 consecutive days at a time as it slides across the full timeline.">training window</span>.
+          </div>
+        </div>
+
+        <div style="background: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-6); margin: var(--space-6) 0; border: 1px solid var(--color-border);">
+          <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: var(--space-3);">Example: One participant with 200 days, window = 90 days, stride = 1</p>
+          <div style="position: relative; height: 80px; background: var(--color-bg); border-radius: var(--radius-sm); overflow: hidden;">
+            <!-- Timeline bar -->
+            <div style="position: absolute; top: 35px; left: 20px; right: 20px; height: 10px; background: var(--color-border); border-radius: 5px;"></div>
+            <!-- Window 1 -->
+            <div style="position: absolute; top: 30px; left: 20px; width: 45%; height: 20px; background: var(--color-accent); opacity: 0.3; border-radius: 4px;"></div>
+            <!-- Window label -->
+            <div style="position: absolute; top: 10px; left: 20px; font-size: var(--text-xs); color: var(--color-accent); font-family: var(--font-mono);">Window 1 (days 1–90)</div>
+            <!-- Day markers -->
+            <div style="position: absolute; bottom: 10px; left: 20px; font-size: var(--text-xs); color: var(--color-text-muted); font-family: var(--font-mono);">Day 1</div>
+            <div style="position: absolute; bottom: 10px; right: 20px; font-size: var(--text-xs); color: var(--color-text-muted); font-family: var(--font-mono);">Day 200</div>
+          </div>
+          <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-top: var(--space-3); text-align: center;">→ Window slides forward, creating 110 separate training examples from one participant</p>
+        </div>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Why this matters:</strong> Instead of having ~100 participants × 1 score each = 100 training examples, you get 100 participants × ~100 windows each = <strong>10,000+ training examples</strong>. The AI gets much more to learn from.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 2: The Dataset class -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">FitnessSequenceDataset — the historian</h2>
+        <p>The file <code>temporal_dataset.py</code> defines a <span class="tooltip-term" data-tooltip="In PyTorch (a popular AI library), a Dataset is a class that knows how many examples exist and how to return example number N on demand. It&apos;s like a library that knows it has 10,000 books and can hand you book #4,721 whenever asked.">Dataset class</span> called <code>FitnessSequenceDataset</code>. It does three things:</p>
+
+        <div class="flow-steps" style="margin: var(--space-8) 0;">
+          <div class="flow-step">
+            <div class="flow-step-number">1</div>
+            <div class="flow-step-content">
+              <strong>Match participants</strong><br>
+              <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">Find participants who appear in BOTH the fitness data AND the cognitive scores file</span>
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-number">2</div>
+            <div class="flow-step-content">
+              <strong>Slice windows</strong><br>
+              <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">For each participant, slide a 90-day window across their full history</span>
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-number">3</div>
+            <div class="flow-step-content">
+              <strong>Return (X, y) pairs</strong><br>
+              <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">Each window X = 90 days of fitness, y = that participant&apos;s cognitive score</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="translation-block animate-in">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">for</span> <span class="code-property">end</span> <span class="code-keyword">in</span> <span class="code-function">range</span>(<span class="code-property">window_days</span>, <span class="code-property">end_max</span>, <span class="code-property">stride</span>):</span>
+<span class="code-line">    <span class="code-property">window</span> = <span class="code-property">seq</span>[<span class="code-property">end</span> - <span class="code-property">window_days</span> : <span class="code-property">end</span>]</span>
+<span class="code-line">    <span class="code-property">self</span>.<span class="code-property">samples</span>.<span class="code-function">append</span>((<span class="code-property">window</span>, <span class="code-property">y</span>, <span class="code-property">pid</span>))</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Loop through all possible end-points for a window, moving one day at a time.</p>
+              <p class="tl">Grab the 90 days ending at this point — the &quot;film clip&quot; ending here.</p>
+              <p class="tl">Save this window + the participant&apos;s cognitive score as one training example.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 3: What a single sample looks like -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">What one training example looks like</h2>
+        <p>Each sample the AI sees is an <span class="tooltip-term" data-tooltip="A multi-dimensional grid of numbers. Like a spreadsheet, but for AI. A 90×15 tensor is a grid with 90 rows (days) and 15 columns (features). AI models natively work with tensors.">tensor</span> — a 2D grid of numbers:</p>
+
+        <div style="background: var(--color-bg-code); border-radius: var(--radius-md); padding: var(--space-6); margin: var(--space-6) 0; font-family: var(--font-mono); font-size: var(--text-sm); color: #CDD6F4; overflow: hidden;">
+          <div style="color: #6C7086; margin-bottom: var(--space-3);"># X: the input (90 days × 15 features)</div>
+          <div style="display: grid; grid-template-columns: auto 1fr; gap: var(--space-2) var(--space-4); align-items: center; margin-bottom: var(--space-4);">
+            <span style="color: #F9E2AF;">Day 1:</span><span style="color: #A6E3A1;">[ 0.42, -0.81, 1.23, 0.07, -0.55, ... 15 values ]</span>
+            <span style="color: #F9E2AF;">Day 2:</span><span style="color: #A6E3A1;">[ 0.51, -0.79, 1.19, 0.11, -0.48, ... 15 values ]</span>
+            <span style="color: #6C7086;">...   </span><span style="color: #6C7086;">( 88 more days )</span>
+            <span style="color: #F9E2AF;">Day 90:</span><span style="color: #A6E3A1;">[ 0.89, -0.32, 0.94, 0.55, 0.12, ... 15 values ]</span>
+          </div>
+          <div style="color: #6C7086; margin-bottom: var(--space-2);"># y: the target (3 cognitive scores)</div>
+          <span style="color: #CBA6F7;">[ 0.73, 0.61, 0.44 ]</span>
+          <span style="color: #6C7086; margin-left: var(--space-3);"># free_recall, nat_recall, temporal_clustering</span>
+        </div>
+
+        <p>The AI&apos;s job: look at the 90×15 grid of fitness numbers and predict the 3 cognitive scores. Every 90-day window from every participant teaches the model something.</p>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Vocabulary moment:</strong> X is called the <span class="tooltip-term" data-tooltip="The input data — what goes INTO the model. Like the question on a test.">features</span> and y is called the <span class="tooltip-term" data-tooltip="The output the model tries to predict — what you want to get right. Like the answer on a test.">labels</span> (or targets). In every machine learning project, there is an X and a y. Finding good X features that predict y is half the art of data science.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 4: The lag parameter -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The lag parameter — the scientific question in code form</h2>
+        <p>Here&apos;s where the science gets interesting. The <code>lag_days</code> parameter in the dataset lets you say: &quot;I want the fitness window to END some number of days <em>before</em> the cognitive assessment.&quot;</p>
+
+        <div style="background: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-6); margin: var(--space-6) 0; border: 1px solid var(--color-border);">
+          <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+            <div>
+              <span style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-accent);">lag_days = 0</span>
+              <p style="margin: var(--space-1) 0; font-size: var(--text-sm);">Fitness window ends the day of the cognitive test. Current fitness predicts current cognition.</p>
+            </div>
+            <div>
+              <span style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-actor-3);">lag_days = 14</span>
+              <p style="margin: var(--space-1) 0; font-size: var(--text-sm);">Fitness window ends 2 weeks before the test. Did fitness 2 weeks ago predict today&apos;s score?</p>
+            </div>
+            <div>
+              <span style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-actor-5);">lag_days = 90</span>
+              <p style="margin: var(--space-1) 0; font-size: var(--text-sm);">Fitness window ends 3 months before the test. Long-term fitness patterns as a predictor.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-icon">🔬</div>
+          <div class="callout-body">
+            <strong>Why this matters scientifically:</strong> If the model predicts best at lag=14 (2 weeks before), that suggests exercise affects the brain with a roughly 2-week delay. This kind of finding can guide real-world recommendations — "exercise now for brain benefits in two weeks."
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 5: Quiz -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Test your understanding</h2>
+
+        <div class="quiz-container" id="quiz-module3">
+          <div class="quiz-question-block"
+               data-correct="option-a"
+               data-explanation-right="Exactly! If the model predicts best at lag=0, it means concurrent fitness (on the day of) predicts cognition best. That&apos;s correlation. A model that peaks at lag=30 suggests fitness from 30 days prior is the better predictor — that&apos;s closer to evidence of a causal delay."
+               data-explanation-wrong="Not quite. lag=0 means no time gap — we&apos;re measuring fitness at the same time as the test. If we&apos;re trying to show that exercise CAUSES cognitive improvement (with a delay), we actually WANT a non-zero lag to show the best prediction.">
+            <h3 class="quiz-question">The model trained with lag_days=0 performs just as well as lag_days=30. What does this suggest about the relationship between exercise and cognition?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Exercise and cognition might be correlated but not necessarily causal — concurrent fitness predicts just as well as past fitness</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The model is broken and needs to be retrained</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The window_days parameter is too large</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Correct! Each window is paired with that participant&apos;s cognitive score — all windows from the same person share the same y label. This is fine for the model to learn from, though it means the samples are not fully independent."
+               data-explanation-wrong="Not quite. All windows from one participant share the same cognitive score (y). So window 1–90, window 2–91, etc., all point to the same y. The model learns: &quot;what fitness patterns in this person&apos;s history are associated with their cognitive score?&quot;">
+            <h3 class="quiz-question">Participant BFM_AMT_0005 has 200 days of data. The dataset creates ~110 windows. What cognitive score (y) is each window paired with?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>A different score for each window, sampled from that time period</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The same cognitive score — their end-of-study test result — for all 110 windows</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The average cognitive score across all participants</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module3')">Check Answers</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module3')">Try Again</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</section>
+<section class="module" id="module-4" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">04</span>
+      <h1 class="module-title">Teaching AI to Read Time</h1>
+      <p class="module-subtitle">Two architectures that learn patterns in sequences — and how they&apos;re trained, evaluated, and compared.</p>
+    </header>
+
+    <div class="module-body">
+
+      <!-- Screen 1: Why normal AI can't handle sequences -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Why ordinary AI can&apos;t read a fitness timeline</h2>
+        <p>A simple <span class="tooltip-term" data-tooltip="A type of AI model that works like a series of mathematical transformations — inputs go in, numbers get multiplied and added through layers, and a prediction comes out. Great for fixed-size inputs, but blind to order and time.">neural network</span> sees a set of numbers and produces an output. But it&apos;s completely blind to <em>order</em>. It wouldn&apos;t know if Monday came before Tuesday or after Wednesday.</p>
+
+        <div class="callout callout-info" style="margin: var(--space-6) 0;">
+          <div class="callout-icon">🎵</div>
+          <div class="callout-body">
+            <strong>The music sheet metaphor:</strong> Imagine someone reads a piece of music — but they see all the notes at once, shuffled randomly. They could tell you which notes are there, but they couldn&apos;t play the melody. Fitness data is like music: the <em>sequence and rhythm</em> matter, not just which numbers appear.
+          </div>
+        </div>
+
+        <p>This project uses two architectures designed specifically for sequences:</p>
+
+        <div class="pattern-cards stagger-children">
+          <div class="pattern-card animate-in" style="border-top: 3px solid var(--color-actor-1);">
+            <div class="pattern-card-icon">🔄</div>
+            <h3 style="color: var(--color-actor-1);">FitnessLSTM</h3>
+            <p>An LSTM reads the sequence step by step, maintaining a &quot;memory&quot; that it updates as it sees each new day. Like reading a story — each sentence builds on what came before.</p>
+          </div>
+          <div class="pattern-card animate-in" style="border-top: 3px solid var(--color-actor-2);">
+            <div class="pattern-card-icon">🔭</div>
+            <h3 style="color: var(--color-actor-2);">FitnessTransformer</h3>
+            <p>A Transformer reads the whole sequence at once and uses <em>attention</em> to decide which days matter most. Like re-reading a story with the ending in mind — now you know which clues were important.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 2: LSTM architecture -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">FitnessLSTM — the step-by-step reader</h2>
+        <p>LSTM stands for <span class="tooltip-term" data-tooltip="Long Short-Term Memory — a type of recurrent neural network designed to remember useful information over long sequences while forgetting irrelevant details. Invented in 1997, still widely used.">Long Short-Term Memory</span>. It processes one day at a time, maintaining a hidden state that carries information forward through the sequence.</p>
+
+        <div class="translation-block animate-in">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-property">self</span>.<span class="code-property">input_proj</span> = <span class="code-function">nn.Linear</span>(<span class="code-property">N_FEATURES</span>, <span class="code-property">d_model</span>)</span>
+<span class="code-line"><span class="code-property">self</span>.<span class="code-property">lstm</span> = <span class="code-function">nn.LSTM</span>(</span>
+<span class="code-line">    <span class="code-property">input_size</span>=<span class="code-property">d_model</span>,</span>
+<span class="code-line">    <span class="code-property">hidden_size</span>=<span class="code-property">hidden_size</span>,</span>
+<span class="code-line">    <span class="code-property">num_layers</span>=<span class="code-property">n_layers</span>,</span>
+<span class="code-line">    <span class="code-property">bidirectional</span>=<span class="code-keyword">True</span>,</span>
+<span class="code-line">)</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">A translation layer: compress the 15 raw features into 32 richer numbers.</p>
+              <p class="tl">Create the LSTM — the sequence-reading engine.</p>
+              <p class="tl">Each day gets compressed to 32 numbers first.</p>
+              <p class="tl">The &quot;memory&quot; size — how much the model can remember at each step.</p>
+              <p class="tl">Stack multiple LSTM layers for deeper pattern detection.</p>
+              <p class="tl">Bidirectional: read the sequence both forward AND backward — since we have the full window at test time.</p>
+              <p class="tl">End of LSTM setup.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Why bidirectional?</strong> Reading a fitness history forward makes sense — earlier fitness affects later fitness. But reading backward too helps the model spot where trends <em>end</em>, not just begin. Since we have the whole window at prediction time (not a live stream), this is safe and useful.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 3: Transformer architecture -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">FitnessTransformer — the attention reader</h2>
+        <p>The <span class="tooltip-term" data-tooltip="A neural network architecture that processes sequences using attention mechanisms rather than reading step-by-step. The same architecture powering GPT, Claude, and most modern AI. Published in &apos;Attention Is All You Need&apos; (2017).">Transformer</span> architecture doesn&apos;t read the sequence step-by-step. Instead, it converts each day into a &quot;token&quot; and then uses <span class="tooltip-term" data-tooltip="A mechanism that lets the model decide which parts of the input to focus on when making predictions. If the model is predicting memory performance, attention might focus on days with high exercise intensity.">attention</span> to decide which days are most relevant to predicting cognition.</p>
+
+        <div class="flow-animation" data-steps='[
+          {"highlight":"flow-actor-1","label":"90 days of fitness data come in (90 rows x 15 features)","packet":false},
+          {"highlight":"flow-actor-2","label":"Input projection: each day gets compressed to a 64-number token","packet":true,"from":"1","to":"2"},
+          {"highlight":"flow-actor-3","label":"Positional embedding added: each token learns it is day 1, day 2, ... day 90","packet":true,"from":"2","to":"3"},
+          {"highlight":"flow-actor-4","label":"Attention layers: every day looks at every other day and decides which ones matter most","packet":true,"from":"3","to":"4"},
+          {"highlight":"flow-actor-5","label":"Mean pooling + prediction head: average across all days, then predict 3 cognitive scores","packet":true,"from":"4","to":"5"}
+        ]'>
+          <div class="flow-actors">
+            <div class="flow-actor" id="flow-actor-1">
+              <div class="flow-actor-icon">📊</div>
+              <div class="flow-actor-name">Raw Window</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-2">
+              <div class="flow-actor-icon">🔢</div>
+              <div class="flow-actor-name">Tokens</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-3">
+              <div class="flow-actor-icon">📍</div>
+              <div class="flow-actor-name">Positioned</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-4">
+              <div class="flow-actor-icon">🔭</div>
+              <div class="flow-actor-name">Attention</div>
+            </div>
+            <div class="flow-actor" id="flow-actor-5">
+              <div class="flow-actor-icon">🎯</div>
+              <div class="flow-actor-name">Prediction</div>
+            </div>
+          </div>
+          <div class="flow-status"></div>
+          <div class="flow-controls">
+            <button class="btn flow-next-btn">Next Step →</button>
+            <button class="btn flow-reset-btn">Reset</button>
+          </div>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-icon">🔭</div>
+          <div class="callout-body">
+            <strong>The interpretability bonus:</strong> The Transformer saves its attention weights — you can literally inspect <em>which days</em> the model focused on when making its prediction. Did it attend to the high-steps days? The low-sedentary days? This turns the model into a scientific instrument.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 4: The Trainer — how models learn -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The Trainer — teaching the model through repetition</h2>
+        <p>The <code>Trainer</code> class runs the learning loop. Training an AI model is iterative — you show it examples, it makes predictions, you measure how wrong it was, and it adjusts itself slightly. Repeat thousands of times.</p>
+
+        <div class="pattern-cards stagger-children">
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">📐</div>
+            <h3>MSE Loss</h3>
+            <p><span class="tooltip-term" data-tooltip="Mean Squared Error — the average of (prediction - truth)² across all examples. A loss of 0 means perfect predictions. The model tries to minimize this number.">MSE</span> measures how wrong the predictions are. Squaring the errors penalizes big mistakes more than small ones. The model tries to shrink this number every iteration.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">🧭</div>
+            <h3>AdamW Optimizer</h3>
+            <p><span class="tooltip-term" data-tooltip="An optimization algorithm that adjusts the model&apos;s weights (numbers) to reduce prediction error. AdamW is a popular variant that also penalizes large weights to prevent overfitting.">AdamW</span> decides how to adjust the model&apos;s millions of internal numbers after each batch of examples. It&apos;s the engine of learning.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">🛑</div>
+            <h3>Early Stopping</h3>
+            <p>If the model stops improving on the <span class="tooltip-term" data-tooltip="A separate set of data used to evaluate the model during training — the model never learns from it, but training stops when performance here stops improving.">validation set</span> for 10 epochs in a row, training stops. This prevents <span class="tooltip-term" data-tooltip="When a model memorizes the training examples instead of learning general patterns — it aces training data but fails on new data it hasn&apos;t seen.">overfitting</span> to the training data.</p>
+          </div>
+        </div>
+
+        <div class="translation-block animate-in">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">if</span> <span class="code-property">v_loss</span> &lt; <span class="code-property">best_val_loss</span>:</span>
+<span class="code-line">    <span class="code-property">best_val_loss</span> = <span class="code-property">v_loss</span></span>
+<span class="code-line">    <span class="code-property">best_state</span> = {...<span class="code-property">model.state_dict</span>()...}</span>
+<span class="code-line">    <span class="code-property">patience_counter</span> = <span class="code-number">0</span></span>
+<span class="code-line"><span class="code-keyword">else</span>:</span>
+<span class="code-line">    <span class="code-property">patience_counter</span> += <span class="code-number">1</span></span>
+<span class="code-line">    <span class="code-keyword">if</span> <span class="code-property">patience_counter</span> &gt;= <span class="code-property">self</span>.<span class="code-property">patience</span>:</span>
+<span class="code-line">        <span class="code-keyword">break</span></span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">If the model just got its best validation score ever...</p>
+              <p class="tl">Remember this as the new personal best.</p>
+              <p class="tl">Save a snapshot of the model&apos;s weights — we can come back to this.</p>
+              <p class="tl">Reset the patience counter — we&apos;re improving, keep going.</p>
+              <p class="tl">Otherwise (it didn&apos;t improve)...</p>
+              <p class="tl">Increment the &quot;no improvement&quot; counter.</p>
+              <p class="tl">If we haven&apos;t improved in 10 epochs in a row...</p>
+              <p class="tl">Stop training. We&apos;ve reached the ceiling.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 5: Quiz -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Apply your knowledge</h2>
+
+        <div class="quiz-container" id="quiz-module4">
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Right! The Transformer saves attention weights, which let you see which days the model focused on when predicting cognition. That&apos;s scientifically useful — if the model attends to high-exercise days, that&apos;s evidence those days matter."
+               data-explanation-wrong="Not quite. Both models predict cognitive scores. The key difference is interpretability — the Transformer saves attention weights that reveal WHICH days it found important. The LSTM just gives you a prediction without that explanation.">
+            <h3 class="quiz-question">You want to know which specific days in the 90-day fitness window were most predictive of cognitive scores. Which model gives you that insight — and why?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>FitnessLSTM — it reads day by day, so each day&apos;s contribution is clearer</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>FitnessTransformer — it saves attention weights that show which days the model focused on</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Both give equal insight into which days matter</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Exactly! Early stopping restores the best-ever model weights before returning. If you train for 50 epochs but the best validation performance was at epoch 23, the Trainer gives you the epoch-23 version — not the potentially overfit epoch-50 version."
+               data-explanation-wrong="Not quite. The Trainer saves a snapshot of the model at its best validation performance and restores it at the end — even if training continued past that point. So you always get the best model, not the most recent one.">
+            <h3 class="quiz-question">Training runs for 50 epochs. The best validation performance was at epoch 23. Training continued until epoch 35 (patience=12). What does the Trainer return at the end?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The model from epoch 50 — the most recent one</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The model from epoch 35 — when early stopping triggered</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The model from epoch 23 — the best validation performance ever achieved</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module4')">Check Answers</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module4')">Try Again</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</section>
+<section class="module" id="module-5" style="background: var(--color-bg)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">05</span>
+      <h1 class="module-title">The Lag Experiment</h1>
+      <p class="module-subtitle">Does yesterday&apos;s run predict today&apos;s memory? The scientific heart of this project.</p>
+    </header>
+
+    <div class="module-body">
+
+      <!-- Screen 1: What is the lag analysis -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The key scientific question, in code form</h2>
+        <p>The function <code>run_lag_analysis()</code> is the project&apos;s scientific core. It runs a full experiment — training and evaluating a model for each possible time gap — to find the answer to one question:</p>
+
+        <div class="callout callout-info" style="margin: var(--space-6) 0;">
+          <div class="callout-icon">⏳</div>
+          <div class="callout-body">
+            <strong>At what lag does fitness best predict cognition?</strong><br>
+            If the peak is at lag=0: fitness and cognition are concurrent. Correlation, but not necessarily cause.<br>
+            If the peak is at lag=30: fitness from 30 days ago best predicts today&apos;s cognition. That&apos;s a delay — consistent with a causal mechanism.
+          </div>
+        </div>
+
+        <div class="translation-block animate-in">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">if</span> <span class="code-property">lag_values</span> <span class="code-keyword">is</span> <span class="code-keyword">None</span>:</span>
+<span class="code-line">    <span class="code-property">lag_values</span> = [<span class="code-number">0</span>, <span class="code-number">7</span>, <span class="code-number">14</span>, <span class="code-number">21</span>, <span class="code-number">30</span>, <span class="code-number">45</span>, <span class="code-number">60</span>, <span class="code-number">90</span>]</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-keyword">for</span> <span class="code-property">lag</span> <span class="code-keyword">in</span> <span class="code-property">lag_values</span>:</span>
+<span class="code-line">    <span class="code-property">train_loader</span>, ... = <span class="code-function">make_dataloaders</span>(</span>
+<span class="code-line">        ..., <span class="code-property">lag_days</span>=<span class="code-property">lag</span>, ...)</span>
+<span class="code-line">    <span class="code-property">model</span> = <span class="code-function">FitnessLSTM</span>(<span class="code-property">n_tasks</span>=<span class="code-property">n_tasks</span>)</span>
+<span class="code-line">    <span class="code-property">trainer</span>.<span class="code-function">fit</span>(<span class="code-property">train_loader</span>, <span class="code-property">val_loader</span>)</span>
+<span class="code-line">    <span class="code-property">results</span>[<span class="code-property">lag</span>] = <span class="code-property">trainer</span>.<span class="code-function">evaluate</span>(<span class="code-property">test_loader</span>)</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">If no lag values specified, use this default list:</p>
+              <p class="tl">Test at 0, 1 week, 2 weeks, 3 weeks, 1 month, 6 weeks, 2 months, 3 months.</p>
+              <p class="tl">&nbsp;</p>
+              <p class="tl">For each lag value, create fresh data loaders with that time gap applied.</p>
+              <p class="tl">(Windows will end lag days BEFORE the cognitive assessment.)</p>
+              <p class="tl">Create a new model from scratch — no shared weights between lag experiments.</p>
+              <p class="tl">Train the model on training data, watch validation for early stopping.</p>
+              <p class="tl">Record test performance for this lag. Compare across all lags to find the peak.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 2: What is R² -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">R² — the score that tells you how well it works</h2>
+        <p>After training, each model is evaluated with a metric called <span class="tooltip-term" data-tooltip="R-squared (R²) — a measure of how well a model&apos;s predictions match the actual values. Ranges from 1.0 (perfect) to 0 (no better than guessing the average) to negative (worse than guessing the average).">R²</span> (R-squared). Think of it like a golf handicap for model performance:</p>
+
+        <div style="background: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-6); margin: var(--space-6) 0; border: 1px solid var(--color-border);">
+          <div style="display: flex; flex-direction: column; gap: var(--space-5);">
+            <div style="display: flex; align-items: center; gap: var(--space-4);">
+              <div style="min-width: 60px; text-align: center; font-family: var(--font-mono); font-weight: 700; color: var(--color-success); font-size: var(--text-lg);">1.0</div>
+              <div>
+                <strong>Perfect</strong> — the model predicts every participant&apos;s score exactly right. Never happens in real research.
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: var(--space-4);">
+              <div style="min-width: 60px; text-align: center; font-family: var(--font-mono); font-weight: 700; color: var(--color-accent); font-size: var(--text-lg);">0.3</div>
+              <div>
+                <strong>Meaningful signal</strong> — the model explains 30% of the variation in cognitive scores. For human behavior data, this is genuinely impressive.
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: var(--space-4);">
+              <div style="min-width: 60px; text-align: center; font-family: var(--font-mono); font-weight: 700; color: var(--color-text-muted); font-size: var(--text-lg);">0.0</div>
+              <div>
+                <strong>No better than average</strong> — the model just predicts the mean score for everyone. Useless.
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: var(--space-4);">
+              <div style="min-width: 60px; text-align: center; font-family: var(--font-mono); font-weight: 700; color: var(--color-error); font-size: var(--text-lg);">&lt;0</div>
+              <div>
+                <strong>Actively bad</strong> — the model is worse than guessing. Something is wrong.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 3: How the results get plotted -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The output: R² vs. lag plots</h2>
+        <p>After running all the lag experiments, the code produces two charts saved to the <code>results/</code> folder:</p>
+
+        <div class="pattern-cards stagger-children">
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">📈</div>
+            <h3>lag_analysis.png</h3>
+            <p>A line graph: lag days on the X axis, mean test R² on the Y axis. The peak of this curve reveals the optimal lag — how far in advance fitness predicts cognition.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">🎨</div>
+            <h3>lag_analysis_per_task.png</h3>
+            <p>Same graph, but with one line per cognitive task (free recall, temporal clustering, etc.). Different memory tasks might have different optimal lags.</p>
+          </div>
+        </div>
+
+        <div style="background: var(--color-bg-code); border-radius: var(--radius-md); padding: var(--space-6); margin: var(--space-6) 0; font-family: var(--font-mono); font-size: var(--text-sm); color: #CDD6F4;">
+          <div style="color: #6C7086; margin-bottom: var(--space-3);"># Example hypothetical results (not real output)</div>
+          <div style="display: flex; justify-content: space-between; max-width: 400px; flex-wrap: wrap; gap: var(--space-2);">
+            <div><span style="color: #F9E2AF;">lag=0:</span>  <span style="color: #A6E3A1;">R²=0.18</span></div>
+            <div><span style="color: #F9E2AF;">lag=7:</span>  <span style="color: #A6E3A1;">R²=0.24</span></div>
+            <div><span style="color: #F9E2AF;">lag=14:</span> <span style="color: #A6E3A1; font-weight: 700;">R²=0.31 ← peak</span></div>
+            <div><span style="color: #F9E2AF;">lag=21:</span> <span style="color: #A6E3A1;">R²=0.27</span></div>
+            <div><span style="color: #F9E2AF;">lag=30:</span> <span style="color: #A6E3A1;">R²=0.22</span></div>
+            <div><span style="color: #F9E2AF;">lag=60:</span> <span style="color: #A6E3A1;">R²=0.14</span></div>
+          </div>
+          <div style="color: #6C7086; margin-top: var(--space-3);"># → Peak at lag=14 would suggest a ~2 week delay</div>
+        </div>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Aha moment:</strong> The peak lag is a <em>scientific finding</em>. It&apos;s the answer to the question. If it&apos;s at 14 days, you can say: &quot;Our model suggests that physical fitness from approximately 2 weeks prior is the strongest predictor of cognitive performance — consistent with known timelines of neurobiological adaptation.&quot;
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 4: The full system chat — everything talking together -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">All four files working together</h2>
+        <p>Let&apos;s zoom out. Here&apos;s how the entire system converses when you run a full lag analysis experiment:</p>
+
+        <div class="chat-window" id="chat-fullsystem">
+          <div class="chat-messages">
+            <div class="chat-message" data-msg="0" data-sender="researcher" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-4)">🧑</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-4)">Researcher</span>
+                <p>I want to run a lag analysis with my LSTM model on free_recall_accuracy and nat_recall_immediate. Let&apos;s check lags from 0 to 90 days.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="1" data-sender="reading" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-1)">📄</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-1)">reading_data.py</span>
+                <p>On it. Loading Train, Test, and Validation CSVs. Running quality filtering... 7-step preprocessing... standardization. Train: 4,200 rows ready. Test: 1,100 rows ready. Validation: 950 rows ready.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="2" data-sender="dataset" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-2)">📅</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-2)">temporal_dataset.py</span>
+                <p>Got the clean data. For lag=14: creating 90-day windows that end 14 days before each assessment. Building DataLoaders with batch_size=32... Done. 8,430 training windows ready.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="3" data-sender="model" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-3)">🤖</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-3)">temporal_model.py (LSTM)</span>
+                <p>Starting training for lag=14. Epoch 10: val_loss=0.82, R²=0.14. Epoch 20: val_loss=0.71, R²=0.22. Epoch 31: Early stopping. Restoring best weights. Test R²=0.31.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="4" data-sender="model" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-3)">🤖</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-3)">temporal_model.py (repeating)</span>
+                <p>Now training fresh model for lag=30. Epoch 25: Early stopping. Test R²=0.27. And again for lag=0: Test R²=0.18. Running all 8 lag values...</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="5" data-sender="researcher" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-5)">📊</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-5)">Results</span>
+                <p>All 8 models trained. Peak R²=0.31 at lag=14. Saved lag_analysis.png and lag_analysis_per_task.png to results/. The data suggests a ~2 week fitness-to-cognition delay.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-typing" id="chat-fullsystem-typing" style="display:none">
+            <div class="chat-avatar" id="chat-fullsystem-typing-avatar">?</div>
+            <div class="chat-typing-dots">
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+            </div>
+          </div>
+
+          <div class="chat-controls">
+            <button class="btn chat-next-btn">Next →</button>
+            <button class="btn chat-all-btn">Play All</button>
+            <button class="btn chat-reset-btn">Replay</button>
+            <span class="chat-progress"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 5: Final quiz -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Final challenge — put it all together</h2>
+
+        <div class="quiz-container" id="quiz-module5">
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Exactly right! If R² is highest at lag=0 and falls off as lag increases, that means fitness at the same time as the test is the best predictor. Concurrent measurement, not predictive delay. The data suggests correlation rather than a time-lagged causal effect."
+               data-explanation-wrong="Not quite. If lag=0 has the highest R², it means we need NO time gap — fitness right now predicts cognition right now. That&apos;s a correlation result, not evidence of a delayed causal mechanism.">
+            <h3 class="quiz-question">The lag analysis shows: R²=0.41 at lag=0, R²=0.35 at lag=7, R²=0.28 at lag=14, declining further after. What does this pattern suggest scientifically?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Exercise needs at least 7 days to affect the brain — that&apos;s why lag=7 is strong</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Concurrent fitness (same time as the test) is the strongest predictor — this is correlation, not a proven time-lagged causal effect</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The model is overfitting — R² should not decrease with more data</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Correct! You need to rebuild the dataloaders with the new lag value, train a fresh model, and evaluate it. The models are NOT shared between lag experiments — each lag gets its own independently trained model."
+               data-explanation-wrong="Not quite. Each lag experiment requires creating new DataLoaders (with the new lag parameter applied), training a completely fresh model from scratch, and then evaluating it. You can&apos;t just re-evaluate an existing model at a new lag.">
+            <h3 class="quiz-question">You ran the lag analysis with the default 8 lag values and want to add lag=45 days. What does the code need to do to get the R² for that new lag value?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Re-evaluate the existing lag=30 model on lag=45 data — they&apos;re close enough</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Modify the existing trained model&apos;s weights to shift by 15 days</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Create new DataLoaders with lag=45, train a fresh model from scratch, then evaluate it</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-block"
+               data-correct="option-a"
+               data-explanation-right="Yes! reading_data.py is where the train/test/val splits are defined and loaded. If you want to add a new participant group or change the split ratios, that&apos;s where you&apos;d ask your AI coding assistant to make changes."
+               data-explanation-wrong="Not quite. Split handling happens in reading_data.py — it loads Train/, Test/, and Validation/ folders and applies separate preprocessing for each. temporal_dataset.py receives already-split data and creates windows from it.">
+            <h3 class="quiz-question">A collaborator shares a new set of participant CSVs and says they should be used as an additional validation set. Which file would you direct your AI coding assistant to modify?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>reading_data.py — it controls how splits are loaded and preprocessed</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>temporal_dataset.py — it controls train/test/val splits</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>temporal_model.py — it runs the experiment, so it would need to know about the new data</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module5')">Check Answers</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module5')">Try Again</button>
+        </div>
+
+        <div class="callout callout-success" style="margin-top: var(--space-10);">
+          <div class="callout-icon">🎓</div>
+          <div class="callout-body">
+            <strong>You&apos;ve completed the course!</strong> You now understand how wearable fitness data gets cleaned, sliced into time windows, fed to two different AI architectures, and used to run a scientific experiment on the relationship between physical fitness and cognitive performance. You can read this code, steer an AI assistant to modify it, and explain the design decisions to a collaborator.
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</section>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,282 @@
+<section class="module" id="module-5" style="background: var(--color-bg)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">05</span>
+      <h1 class="module-title">The Lag Experiment</h1>
+      <p class="module-subtitle">Does yesterday&apos;s run predict today&apos;s memory? The scientific heart of this project.</p>
+    </header>
+
+    <div class="module-body">
+
+      <!-- Screen 1: What is the lag analysis -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The key scientific question, in code form</h2>
+        <p>The function <code>run_lag_analysis()</code> is the project&apos;s scientific core. It runs a full experiment — training and evaluating a model for each possible time gap — to find the answer to one question:</p>
+
+        <div class="callout callout-info" style="margin: var(--space-6) 0;">
+          <div class="callout-icon">⏳</div>
+          <div class="callout-body">
+            <strong>At what lag does fitness best predict cognition?</strong><br>
+            If the peak is at lag=0: fitness and cognition are concurrent. Correlation, but not necessarily cause.<br>
+            If the peak is at lag=30: fitness from 30 days ago best predicts today&apos;s cognition. That&apos;s a delay — consistent with a causal mechanism.
+          </div>
+        </div>
+
+        <div class="translation-block animate-in">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">if</span> <span class="code-property">lag_values</span> <span class="code-keyword">is</span> <span class="code-keyword">None</span>:</span>
+<span class="code-line">    <span class="code-property">lag_values</span> = [<span class="code-number">0</span>, <span class="code-number">7</span>, <span class="code-number">14</span>, <span class="code-number">21</span>, <span class="code-number">30</span>, <span class="code-number">45</span>, <span class="code-number">60</span>, <span class="code-number">90</span>]</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-keyword">for</span> <span class="code-property">lag</span> <span class="code-keyword">in</span> <span class="code-property">lag_values</span>:</span>
+<span class="code-line">    <span class="code-property">train_loader</span>, ... = <span class="code-function">make_dataloaders</span>(</span>
+<span class="code-line">        ..., <span class="code-property">lag_days</span>=<span class="code-property">lag</span>, ...)</span>
+<span class="code-line">    <span class="code-property">model</span> = <span class="code-function">FitnessLSTM</span>(<span class="code-property">n_tasks</span>=<span class="code-property">n_tasks</span>)</span>
+<span class="code-line">    <span class="code-property">trainer</span>.<span class="code-function">fit</span>(<span class="code-property">train_loader</span>, <span class="code-property">val_loader</span>)</span>
+<span class="code-line">    <span class="code-property">results</span>[<span class="code-property">lag</span>] = <span class="code-property">trainer</span>.<span class="code-function">evaluate</span>(<span class="code-property">test_loader</span>)</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">If no lag values specified, use this default list:</p>
+              <p class="tl">Test at 0, 1 week, 2 weeks, 3 weeks, 1 month, 6 weeks, 2 months, 3 months.</p>
+              <p class="tl">&nbsp;</p>
+              <p class="tl">For each lag value, create fresh data loaders with that time gap applied.</p>
+              <p class="tl">(Windows will end lag days BEFORE the cognitive assessment.)</p>
+              <p class="tl">Create a new model from scratch — no shared weights between lag experiments.</p>
+              <p class="tl">Train the model on training data, watch validation for early stopping.</p>
+              <p class="tl">Record test performance for this lag. Compare across all lags to find the peak.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 2: What is R² -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">R² — the score that tells you how well it works</h2>
+        <p>After training, each model is evaluated with a metric called <span class="tooltip-term" data-tooltip="R-squared (R²) — a measure of how well a model&apos;s predictions match the actual values. Ranges from 1.0 (perfect) to 0 (no better than guessing the average) to negative (worse than guessing the average).">R²</span> (R-squared). Think of it like a golf handicap for model performance:</p>
+
+        <div style="background: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-6); margin: var(--space-6) 0; border: 1px solid var(--color-border);">
+          <div style="display: flex; flex-direction: column; gap: var(--space-5);">
+            <div style="display: flex; align-items: center; gap: var(--space-4);">
+              <div style="min-width: 60px; text-align: center; font-family: var(--font-mono); font-weight: 700; color: var(--color-success); font-size: var(--text-lg);">1.0</div>
+              <div>
+                <strong>Perfect</strong> — the model predicts every participant&apos;s score exactly right. Never happens in real research.
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: var(--space-4);">
+              <div style="min-width: 60px; text-align: center; font-family: var(--font-mono); font-weight: 700; color: var(--color-accent); font-size: var(--text-lg);">0.3</div>
+              <div>
+                <strong>Meaningful signal</strong> — the model explains 30% of the variation in cognitive scores. For human behavior data, this is genuinely impressive.
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: var(--space-4);">
+              <div style="min-width: 60px; text-align: center; font-family: var(--font-mono); font-weight: 700; color: var(--color-text-muted); font-size: var(--text-lg);">0.0</div>
+              <div>
+                <strong>No better than average</strong> — the model just predicts the mean score for everyone. Useless.
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: var(--space-4);">
+              <div style="min-width: 60px; text-align: center; font-family: var(--font-mono); font-weight: 700; color: var(--color-error); font-size: var(--text-lg);">&lt;0</div>
+              <div>
+                <strong>Actively bad</strong> — the model is worse than guessing. Something is wrong.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 3: How the results get plotted -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The output: R² vs. lag plots</h2>
+        <p>After running all the lag experiments, the code produces two charts saved to the <code>results/</code> folder:</p>
+
+        <div class="pattern-cards stagger-children">
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">📈</div>
+            <h3>lag_analysis.png</h3>
+            <p>A line graph: lag days on the X axis, mean test R² on the Y axis. The peak of this curve reveals the optimal lag — how far in advance fitness predicts cognition.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">🎨</div>
+            <h3>lag_analysis_per_task.png</h3>
+            <p>Same graph, but with one line per cognitive task (free recall, temporal clustering, etc.). Different memory tasks might have different optimal lags.</p>
+          </div>
+        </div>
+
+        <div style="background: var(--color-bg-code); border-radius: var(--radius-md); padding: var(--space-6); margin: var(--space-6) 0; font-family: var(--font-mono); font-size: var(--text-sm); color: #CDD6F4;">
+          <div style="color: #6C7086; margin-bottom: var(--space-3);"># Example hypothetical results (not real output)</div>
+          <div style="display: flex; justify-content: space-between; max-width: 400px; flex-wrap: wrap; gap: var(--space-2);">
+            <div><span style="color: #F9E2AF;">lag=0:</span>  <span style="color: #A6E3A1;">R²=0.18</span></div>
+            <div><span style="color: #F9E2AF;">lag=7:</span>  <span style="color: #A6E3A1;">R²=0.24</span></div>
+            <div><span style="color: #F9E2AF;">lag=14:</span> <span style="color: #A6E3A1; font-weight: 700;">R²=0.31 ← peak</span></div>
+            <div><span style="color: #F9E2AF;">lag=21:</span> <span style="color: #A6E3A1;">R²=0.27</span></div>
+            <div><span style="color: #F9E2AF;">lag=30:</span> <span style="color: #A6E3A1;">R²=0.22</span></div>
+            <div><span style="color: #F9E2AF;">lag=60:</span> <span style="color: #A6E3A1;">R²=0.14</span></div>
+          </div>
+          <div style="color: #6C7086; margin-top: var(--space-3);"># → Peak at lag=14 would suggest a ~2 week delay</div>
+        </div>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Aha moment:</strong> The peak lag is a <em>scientific finding</em>. It&apos;s the answer to the question. If it&apos;s at 14 days, you can say: &quot;Our model suggests that physical fitness from approximately 2 weeks prior is the strongest predictor of cognitive performance — consistent with known timelines of neurobiological adaptation.&quot;
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 4: The full system chat — everything talking together -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">All four files working together</h2>
+        <p>Let&apos;s zoom out. Here&apos;s how the entire system converses when you run a full lag analysis experiment:</p>
+
+        <div class="chat-window" id="chat-fullsystem">
+          <div class="chat-messages">
+            <div class="chat-message" data-msg="0" data-sender="researcher" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-4)">🧑</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-4)">Researcher</span>
+                <p>I want to run a lag analysis with my LSTM model on free_recall_accuracy and nat_recall_immediate. Let&apos;s check lags from 0 to 90 days.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="1" data-sender="reading" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-1)">📄</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-1)">reading_data.py</span>
+                <p>On it. Loading Train, Test, and Validation CSVs. Running quality filtering... 7-step preprocessing... standardization. Train: 4,200 rows ready. Test: 1,100 rows ready. Validation: 950 rows ready.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="2" data-sender="dataset" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-2)">📅</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-2)">temporal_dataset.py</span>
+                <p>Got the clean data. For lag=14: creating 90-day windows that end 14 days before each assessment. Building DataLoaders with batch_size=32... Done. 8,430 training windows ready.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="3" data-sender="model" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-3)">🤖</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-3)">temporal_model.py (LSTM)</span>
+                <p>Starting training for lag=14. Epoch 10: val_loss=0.82, R²=0.14. Epoch 20: val_loss=0.71, R²=0.22. Epoch 31: Early stopping. Restoring best weights. Test R²=0.31.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="4" data-sender="model" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-3)">🤖</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-3)">temporal_model.py (repeating)</span>
+                <p>Now training fresh model for lag=30. Epoch 25: Early stopping. Test R²=0.27. And again for lag=0: Test R²=0.18. Running all 8 lag values...</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="5" data-sender="researcher" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-5)">📊</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-5)">Results</span>
+                <p>All 8 models trained. Peak R²=0.31 at lag=14. Saved lag_analysis.png and lag_analysis_per_task.png to results/. The data suggests a ~2 week fitness-to-cognition delay.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-typing" id="chat-fullsystem-typing" style="display:none">
+            <div class="chat-avatar" id="chat-fullsystem-typing-avatar">?</div>
+            <div class="chat-typing-dots">
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+            </div>
+          </div>
+
+          <div class="chat-controls">
+            <button class="btn chat-next-btn">Next →</button>
+            <button class="btn chat-all-btn">Play All</button>
+            <button class="btn chat-reset-btn">Replay</button>
+            <span class="chat-progress"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 5: Final quiz -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Final challenge — put it all together</h2>
+
+        <div class="quiz-container" id="quiz-module5">
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Exactly right! If R² is highest at lag=0 and falls off as lag increases, that means fitness at the same time as the test is the best predictor. Concurrent measurement, not predictive delay. The data suggests correlation rather than a time-lagged causal effect."
+               data-explanation-wrong="Not quite. If lag=0 has the highest R², it means we need NO time gap — fitness right now predicts cognition right now. That&apos;s a correlation result, not evidence of a delayed causal mechanism.">
+            <h3 class="quiz-question">The lag analysis shows: R²=0.41 at lag=0, R²=0.35 at lag=7, R²=0.28 at lag=14, declining further after. What does this pattern suggest scientifically?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Exercise needs at least 7 days to affect the brain — that&apos;s why lag=7 is strong</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Concurrent fitness (same time as the test) is the strongest predictor — this is correlation, not a proven time-lagged causal effect</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The model is overfitting — R² should not decrease with more data</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Correct! You need to rebuild the dataloaders with the new lag value, train a fresh model, and evaluate it. The models are NOT shared between lag experiments — each lag gets its own independently trained model."
+               data-explanation-wrong="Not quite. Each lag experiment requires creating new DataLoaders (with the new lag parameter applied), training a completely fresh model from scratch, and then evaluating it. You can&apos;t just re-evaluate an existing model at a new lag.">
+            <h3 class="quiz-question">You ran the lag analysis with the default 8 lag values and want to add lag=45 days. What does the code need to do to get the R² for that new lag value?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Re-evaluate the existing lag=30 model on lag=45 data — they&apos;re close enough</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Modify the existing trained model&apos;s weights to shift by 15 days</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Create new DataLoaders with lag=45, train a fresh model from scratch, then evaluate it</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-block"
+               data-correct="option-a"
+               data-explanation-right="Yes! reading_data.py is where the train/test/val splits are defined and loaded. If you want to add a new participant group or change the split ratios, that&apos;s where you&apos;d ask your AI coding assistant to make changes."
+               data-explanation-wrong="Not quite. Split handling happens in reading_data.py — it loads Train/, Test/, and Validation/ folders and applies separate preprocessing for each. temporal_dataset.py receives already-split data and creates windows from it.">
+            <h3 class="quiz-question">A collaborator shares a new set of participant CSVs and says they should be used as an additional validation set. Which file would you direct your AI coding assistant to modify?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>reading_data.py — it controls how splits are loaded and preprocessed</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>temporal_dataset.py — it controls train/test/val splits</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>temporal_model.py — it runs the experiment, so it would need to know about the new data</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module5')">Check Answers</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module5')">Try Again</button>
+        </div>
+
+        <div class="callout callout-success" style="margin-top: var(--space-10);">
+          <div class="callout-icon">🎓</div>
+          <div class="callout-body">
+            <strong>You&apos;ve completed the course!</strong> You now understand how wearable fitness data gets cleaned, sliced into time windows, fed to two different AI architectures, and used to run a scientific experiment on the relationship between physical fitness and cognitive performance. You can read this code, steer an AI assistant to modify it, and explain the design decisions to a collaborator.
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</section>

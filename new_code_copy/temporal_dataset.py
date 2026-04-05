@@ -192,6 +192,7 @@ def make_dataloaders(
     stride: int = 1,
     batch_size: int = 32,
     num_workers: int = 0,
+    pin_memory: bool = False,
 ) -> tuple[DataLoader, DataLoader, DataLoader]:
     """
     Convenience function: build train/test/val DataLoaders in one call.
@@ -219,11 +220,11 @@ def make_dataloaders(
     )
 
     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True,
-                              num_workers=num_workers, pin_memory=True)
+                              num_workers=num_workers, pin_memory=pin_memory)
     test_loader  = DataLoader(test_ds,  batch_size=batch_size, shuffle=False,
-                              num_workers=num_workers, pin_memory=True)
+                              num_workers=num_workers, pin_memory=pin_memory)
     val_loader   = DataLoader(val_ds,   batch_size=batch_size, shuffle=False,
-                              num_workers=num_workers, pin_memory=True)
+                              num_workers=num_workers, pin_memory=pin_memory)
 
     return train_loader, test_loader, val_loader
 

@@ -1,0 +1,288 @@
+<section class="module" id="module-2" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">02</span>
+      <h1 class="module-title">Cleaning the Mess</h1>
+      <p class="module-subtitle">Raw wearable data is like a diary written in crayon in the rain — beautiful intentions, brutal readability.</p>
+    </header>
+
+    <div class="module-body">
+
+      <!-- Screen 1: Why raw data is messy -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The problem with real-world data</h2>
+        <p>Think of wearable data like a paper attendance sheet for a class of 100 people. Some days people forgot to sign in. Some people wrote &quot;0&quot; when they meant &quot;didn&apos;t take my watch off.&quot; Some people missed entire weeks. The raw data is full of holes and errors — and an AI fed garbage will learn garbage.</p>
+
+        <div class="callout callout-info">
+          <div class="callout-icon">📝</div>
+          <div class="callout-body">
+            <strong>What the raw data looks like:</strong> Each participant has a <span class="tooltip-term" data-tooltip="A spreadsheet file — rows and columns. CSV stands for Comma-Separated Values, a plain text format that every data tool can read.">CSV file</span> with one row per day per measurement. But there are gaps (missed days), impossible values (weight = 0), and no guarantee every feature was recorded on the same days.
+          </div>
+        </div>
+
+        <p>The file <code>reading_data.py</code> runs a strict <strong>7-step pipeline</strong> to fix all of this before a single number touches the AI model.</p>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Vocabulary moment:</strong> This process — loading, filtering, fixing, and transforming raw data — is called <span class="tooltip-term" data-tooltip="The process of cleaning and transforming raw data into a usable format. Think of it as mise en place in cooking: prepping all your ingredients before you start cooking. Also called ETL (Extract, Transform, Load) in some contexts.">data preprocessing</span>. It&apos;s often 80% of the work in any machine learning project.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 2: The 13 features -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The 13 features — what gets measured</h2>
+        <p>The <span class="tooltip-term" data-tooltip="In machine learning, a feature is any measurable input — a column of data the model can use to make predictions. Like the ingredients in a recipe: each one gives the model information to work with.">features</span> are the 13 health metrics tracked for each participant, each day:</p>
+
+        <div class="translation-block animate-in">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-property">FEATURE_COLS</span> = [</span>
+<span class="code-line">    <span class="code-string">"bmi"</span>, <span class="code-string">"bodyfat"</span>, <span class="code-string">"cal"</span>, <span class="code-string">"cal_bmr"</span>,</span>
+<span class="code-line">    <span class="code-string">"distance"</span>, <span class="code-string">"fair_act_mins"</span>,</span>
+<span class="code-line">    <span class="code-string">"food_cal_log"</span>, <span class="code-string">"light_act_mins"</span>,</span>
+<span class="code-line">    <span class="code-string">"sed_mins"</span>, <span class="code-string">"steps"</span>,</span>
+<span class="code-line">    <span class="code-string">"very_act_mins"</span>, <span class="code-string">"water_log"</span>, <span class="code-string">"weight"</span>,</span>
+<span class="code-line">]</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">This is a list of the 13 columns we care about.</p>
+              <p class="tl">Body measurements: body mass index, body fat percentage, calorie burn, basal metabolic rate.</p>
+              <p class="tl">Activity: distance traveled, fairly-active minutes.</p>
+              <p class="tl">Nutrition &amp; light movement: food calories logged, light-active minutes.</p>
+              <p class="tl">Sedentary minutes, steps taken.</p>
+              <p class="tl">Very-active minutes, water logged, and current weight.</p>
+              <p class="tl">End of the list.</p>
+            </div>
+          </div>
+        </div>
+
+        <p>These are grouped into three categories, which matters for how gaps get filled later:</p>
+        <div class="pattern-cards stagger-children">
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">🏃</div>
+            <h3>Activity Metrics</h3>
+            <p>Steps, distance, calories, active minutes. If you didn&apos;t log activity, it was probably 0 — so missing values get filled with zero.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">⚖️</div>
+            <h3>Physical State</h3>
+            <p>Weight, BMI, body fat. These don&apos;t change overnight — so missing days get filled by carrying the last known value forward.</p>
+          </div>
+          <div class="pattern-card animate-in">
+            <div class="pattern-card-icon">🥗</div>
+            <h3>Nutrition</h3>
+            <p>Food calories, water. Like activity — if you didn&apos;t log it, zero is the safe assumption.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 3: The 7-step pipeline as a group chat -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The 7-step pipeline in action</h2>
+        <p>Imagine the raw data walking into a hospital for a check-up. Here&apos;s what each step does to it:</p>
+
+        <div class="chat-window" id="chat-pipeline">
+          <div class="chat-messages">
+            <div class="chat-message" data-msg="0" data-sender="raw-data" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-4)">📁</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-4)">Raw Data</span>
+                <p>Hi, I just arrived! I have 300 days for BFM_AMT_0005 but... I&apos;m missing Feb 4-12 entirely. Also some of my weight values are 0.0, and my dates aren&apos;t in a consistent format.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="1" data-sender="step0" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-1)">🔍</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-1)">Step 0: Quality Gate</span>
+                <p>First, I check: does this participant have at least 100 days where 5+ features were recorded? If not, they get dropped from the study entirely. Sorry, but garbage-in, garbage-out.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="2" data-sender="step1" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-2)">📅</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-2)">Step 1: Daily Resampling</span>
+                <p>I insert explicit NaN rows for every missing date. So instead of jumping from Feb 3 to Feb 13, you now have 10 empty rows. Gaps become visible — not hidden.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="3" data-sender="step2" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-3)">🔧</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-3)">Step 2: Fix Impossible Zeros</span>
+                <p>Nobody weighs 0 kg. I convert all zeros in weight, BMI, and body fat to NaN (empty). They&apos;re clearly recording errors, not real measurements.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="4" data-sender="step3" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-5)">⏩</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-5)">Step 3: Forward Fill Physical Metrics</span>
+                <p>For weight, BMI, and body fat: carry the last known value forward until a new measurement appears. Your weight Monday is probably very close to Tuesday&apos;s — close enough.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="5" data-sender="step4" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-1)">〰️</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-1)">Step 4: 7-Day Smoothing</span>
+                <p>I apply a rolling 7-day average to every feature. One terrible Tuesday doesn&apos;t tank the whole week&apos;s data. This reduces noise while preserving real trends.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="6" data-sender="step5" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-2)">🩹</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-2)">Step 5: Final Gap Fill</span>
+                <p>Any activity/nutrition NaNs left? Fill with 0. Any physical metric NaNs left? Fill with the average from ALL training participants. No blanks allowed.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="7" data-sender="step6" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-3)">📈</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-3)">Step 6: Relative Change Features</span>
+                <p>I compute new columns: your 7-day average steps divided by your 30-day average steps. This captures <em>trends</em> (are you getting more active?) not just absolute values.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="8" data-sender="step7" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-5)">⚖️</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-5)">Step 7: Standardization</span>
+                <p>Finally — I rescale every feature so they all have the same scale. 10,000 steps and 70 kg are very different numbers; the AI treats them equally after this. Crucially: I learn the scale from TRAINING data only, then apply it to test data.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="9" data-sender="raw-data" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-4)">✅</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-4)">Clean Data</span>
+                <p>I came in as a messy CSV. I leave as a consistent, complete, standardized table — ready for the AI. Every day accounted for. Every number on the same scale. No blanks.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-typing" id="chat-pipeline-typing" style="display:none">
+            <div class="chat-avatar" id="chat-pipeline-typing-avatar">?</div>
+            <div class="chat-typing-dots">
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+            </div>
+          </div>
+
+          <div class="chat-controls">
+            <button class="btn chat-next-btn">Next →</button>
+            <button class="btn chat-all-btn">Play All</button>
+            <button class="btn chat-reset-btn">Replay</button>
+            <span class="chat-progress"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 4: The leakage-free standardization -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">The most important rule: no data leakage</h2>
+        <p>Here&apos;s a subtle but critical point. When you standardize data, you need to calculate the average and spread of the numbers. But <em>whose</em> average do you use?</p>
+
+        <div class="callout callout-info" style="margin: var(--space-6) 0;">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-body">
+            <strong>The temptation:</strong> Calculate the average from all participants (train + test). It&apos;s more data, so it seems better.<br><br>
+            <strong>The problem:</strong> The model would indirectly &quot;see&quot; the test participants during training — like a student getting the exam questions before the test. This is called <span class="tooltip-term" data-tooltip="When information from the test set accidentally leaks into the training process, making the model appear better than it really is. Like studying with the actual exam answers — you look great, but you haven&apos;t actually learned anything.">data leakage</span>, and it makes your results look falsely good.
+          </div>
+        </div>
+
+        <div class="translation-block animate-in">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-property">scaler</span> = <span class="code-function">StandardScaler</span>()</span>
+<span class="code-line"><span class="code-property">scaler</span>.<span class="code-function">fit</span>(<span class="code-property">train_df</span>[<span class="code-property">feature_cols</span>])</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-property">train_scaled</span>[<span class="code-property">feature_cols</span>] = <span class="code-property">scaler</span>.<span class="code-function">transform</span>(<span class="code-property">train_df</span>[...])</span>
+<span class="code-line"><span class="code-property">test_scaled</span>[<span class="code-property">feature_cols</span>] = <span class="code-property">scaler</span>.<span class="code-function">transform</span>(<span class="code-property">test_df</span>[...])</span>
+<span class="code-line"><span class="code-property">val_scaled</span>[<span class="code-property">feature_cols</span>] = <span class="code-property">scaler</span>.<span class="code-function">transform</span>(<span class="code-property">val_df</span>[...])</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Create a scaling calculator (StandardScaler).</p>
+              <p class="tl">ONLY study the training data to learn the average and spread. Never peek at test data here.</p>
+              <p class="tl">&nbsp;</p>
+              <p class="tl">Apply that training-learned scale to normalize the training set.</p>
+              <p class="tl">Apply the SAME scale to test data — using training stats, not test stats.</p>
+              <p class="tl">Same for validation. Everything calibrated to the training set&apos;s reality.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Why this matters for you:</strong> If you ever ask an AI assistant to add a new preprocessing step, always ask: &quot;Does this step accidentally use information from the test set?&quot; If yes, you have data leakage. This is one of the most common mistakes in machine learning projects.
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 5: Quiz -->
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Apply what you&apos;ve learned</h2>
+
+        <div class="quiz-container" id="quiz-module2">
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Correct! Weight changes slowly, so carrying the last known value forward (forward fill) is a safe assumption. Activity metrics get filled with 0 because if there&apos;s no log, there was probably no activity."
+               data-explanation-wrong="Not quite. The code treats these differently on purpose: physical state metrics (weight, BMI) get forward-filled because the value likely persists, while activity metrics get filled with 0 because no log likely means no activity.">
+            <h3 class="quiz-question">A participant skipped logging for a week. Their weight for those days is missing. What does the pipeline do — and why?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Fill with 0 — same as activity metrics</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Carry the last known weight forward — weight doesn&apos;t change overnight</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Drop that participant from the study entirely</span>
+              </button>
+              <button class="quiz-option" data-value="option-d" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Ask the participant to fill in their weight manually</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Exactly! Standardization must be fit on training data only, then applied to all splits. Using test data to compute the scale would let test statistics influence training — that&apos;s data leakage."
+               data-explanation-wrong="Not quite. The right answer is to fit the scaler on training data only, then apply it to test and validation. Using all data together would let the model indirectly &apos;see&apos; test participants during training.">
+            <h3 class="quiz-question">You want to add a new type of scaling to the pipeline. Your AI coding assistant suggests fitting the scaler on all participants combined (train + test + val) for a more accurate scale. What&apos;s the problem?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>It would take too long to compute</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>The scale would be less accurate with more data</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Test data statistics would leak into training — making results look better than they really are</span>
+              </button>
+              <button class="quiz-option" data-value="option-d" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Nothing — this is actually the better approach</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module2')">Check Answers</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module2')">Try Again</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</section>
