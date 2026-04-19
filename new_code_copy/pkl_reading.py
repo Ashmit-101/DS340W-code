@@ -7,7 +7,6 @@ Assumes you have:
 - behavioral_summary.pkl: behavioral scores per participant
 - fitness_summary.pkl: aggregated fitness features per participant
 """
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -51,38 +50,7 @@ def bootstrap_correlation_analysis(
     alpha=0.05,
     random_state=42
 ):
-    """
-    Paper's bootstrap correlation method (Manning et al., 2022, page 5):
-    
-    For each iteration:
-    1. Sample N participants WITH REPLACEMENT
-    2. Compute correlations for all feature pairs (pairwise-complete)
-    3. Track sign consistency across iterations
-    4. Report correlations significant in >97.5% of iterations (two-tailed p<0.05)
-    
-    Uses Fisher z-transformation for averaging correlations (paper's method).
-    
-    Parameters:
-    -----------
-    df : pd.DataFrame
-        Merged dataset with both fitness and behavioral features
-    fitness_features : list
-        List of fitness feature column names
-    behavioral_features : list
-        List of behavioral feature column names
-    n_iterations : int
-        Number of bootstrap iterations (paper uses 10,000)
-    alpha : float
-        Significance threshold (default 0.05 for two-tailed test)
-    random_state : int
-        Random seed for reproducibility
-        
-    Returns:
-    --------
-    pd.DataFrame
-        Results with columns: fitness_feature, behavioral_feature, correlation,
-        p_value, sign, positive_proportion, n_bootstrap_samples, ci_lower, ci_upper
-    """
+
     
     np.random.seed(random_state)
     n_participants = len(df)
