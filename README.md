@@ -14,8 +14,6 @@ This repository contains a Python pipeline for:
 Run all commands from the repository root.
 
 ```bash
-cd /Users/ashmit/Downloads/testing
-
 # Create and activate a virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
