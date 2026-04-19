@@ -21,8 +21,11 @@ This repository contains a Python pipeline for:
 After installing `gh`, authenticate once:
 
 ```bash
+<<<<<<< HEAD
 gh auth login
 ```
+=======
+>>>>>>> f58de268dd123674b3815661ffd013b689fe8817
 
 ### Install Python 3.9+
 
