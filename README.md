@@ -7,46 +7,88 @@ This repository contains a Python pipeline for:
 - training temporal models (LSTM),
 - running lag analysis,
 - running a static Ridge baseline,
-- generating analysis plots in the results folder.
+- generating analysis plots in the `results/` folder.
 
-## 1. First-Time Setup
+---
 
-Run all commands from the repository root.
+## 1. Prerequisites
+
+### Install Git and GitHub CLI
+
+- **Git**: https://git-scm.com/downloads
+- **GitHub CLI** (`gh`): https://cli.github.com/
+
+After installing `gh`, authenticate once:
 
 ```bash
-# Create and activate a virtual environment
+gh auth login
+```
+
+### Install Python 3.9+
+
+- Download from https://www.python.org/downloads/
+- During installation on Windows, check **"Add Python to PATH"**
+- Verify it works:
+
+```bash
+python --version
+```
+
+> On macOS/Linux you may need to use `python3` instead of `python` in all commands below.
+
+---
+
+## 2. Clone the Repository
+
+```bash
+gh repo clone Ashmit-101/DS340W-code
+cd DS340W-code
+```
+
+---
+
+## 3. Create a Virtual Environment and Install Dependencies
+
+**macOS / Linux:**
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
-
-# Upgrade pip and install dependencies
-python -m pip install --upgrade pip
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## 2. Verify Required Data Files
+**Windows (Command Prompt):**
 
-The pipeline expects these paths to exist:
-
-- `data_copy/Train/`
-- `data_copy/Test/`
-- `data_copy/Validation/`
-- `data_copy/raw_formatted/id_filename_key.csv`
-- `data_copy/behavioral_summary.pkl`
-
-Quick check:
-
-```bash
-ls data_copy
-ls data_copy/raw_formatted | head
+```cmd
+python -m venv .venv
+.venv\Scripts\activate
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-## 3. Run the Main End-to-End Pipeline
+**Windows (PowerShell):**
 
-This is the recommended first run:
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+> You must activate the virtual environment every time you open a new terminal before running the pipeline.
+
+---
+
+## 4. Run the Pipeline
+
+From the repository root (the `DS340W-code` folder), run:
 
 ```bash
 python new_code_copy/testing.py
 ```
+
+> On macOS/Linux, use `python3` if `python` is not recognized.
 
 What it does:
 
@@ -57,9 +99,11 @@ What it does:
 5. Runs lag analysis across multiple lag values.
 6. Saves plots to `results/`.
 
-## 4. Optional Scripts
+---
 
-Run these after the main pipeline if needed.
+## 5. Optional Scripts
+
+Run these from the repository root after the main pipeline if needed.
 
 ### Ridge baseline
 
@@ -73,9 +117,11 @@ python new_code_copy/ridge_regression.py
 python new_code_copy/pkl_reading.py
 ```
 
-## 5. Expected Outputs
+---
 
-You should see output artifacts in `results/`, including files such as:
+## 6. Expected Outputs
+
+After running, check the `results/` folder for:
 
 - `lag_analysis.png`
 - `lag_analysis_per_task.png`
@@ -83,29 +129,31 @@ You should see output artifacts in `results/`, including files such as:
 - `ridge_coefficient_heatmap.png`
 - `correlation_heatmap.png`
 
-## 6. Common Issues
+---
 
-### `ModuleNotFoundError` for local files
+## 7. Common Issues
 
-Run scripts from the repository root, not from inside another folder:
+### `python` not found
 
-```bash
-cd /Users/ashmit/Downloads/testing
-python new_code_copy/testing.py
-```
+Try `python3` instead. If neither works, Python is not installed or not on your PATH — revisit step 1.
 
-### `FileNotFoundError` under `data_copy`
+### `ModuleNotFoundError`
 
-Confirm all required folders/files listed above exist and match exact names.
+Make sure you:
+1. Activated the virtual environment (step 3).
+2. Are running commands from the repository root (`DS340W-code/`), not from inside a subfolder.
 
-### Slow training on CPU
+### `FileNotFoundError` under `data_copy/`
 
-This pipeline can take a while on first run. If Apple Metal (MPS) is available, PyTorch will use it automatically.
+The pipeline expects these folders/files to exist inside the repo:
 
-## 7. Re-running Later
+- `data_copy/Train/`
+- `data_copy/Test/`
+- `data_copy/Validation/`
+- `data_copy/behavioral_summary.pkl`
 
-```bash
-cd /Users/ashmit/Downloads/testing
-source .venv/bin/activate
-python new_code_copy/testing.py
-```
+If they are missing, confirm the clone completed successfully.
+
+### Slow training
+
+Training can take several minutes on CPU. On Apple Silicon Macs, PyTorch will use Metal (MPS) automatically for faster training.
