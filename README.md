@@ -29,6 +29,11 @@ A Python pipeline for analyzing fitness-cognition relationships through temporal
 
 ## Quick Start
 
+PASTE ALL THE COMMANDS IN TERMINAL OF YOUR COMPUTER 
+MACOS: CMD+ space -> TERMINAL 
+Windows: pressing Win + X -> "Terminal" or "Windows Terminal"
+
+
 **TL;DR** — if you have all data files and Python 3.9+:
 
 ```bash
@@ -73,8 +78,7 @@ All Python packages are listed in `requirements.txt` and will be installed autom
 - **Estimated storage:** ~2 GB for data + results
 
 ---
-
-## Installation
+# Installation
 
 ### Step 1: Install Git
 
@@ -144,6 +148,23 @@ pip install -r requirements.txt
 
 ---
 
+## Running the Pipeline
+
+### ✅ Pre-Flight Checklist
+
+Before running, verify:
+
+- [ ] Virtual environment is activated (you see `(.venv)` in terminal)
+- [ ] You're in the repository root directory (`DS340W-code/`)
+- [ ] All data files exist in `data_copy/` (see [Data Setup](#data-setup))
+- [ ] `requirements.txt` and `new_code_copy/testing.py` are present
+
+### Main Pipeline
+
+```bash
+python new_code_copy/testing.py
+```
+
 ## Data Setup
 
 ### Required Data Files
@@ -190,23 +211,6 @@ If you are part of the Manning et al. (2022) replication project, data files sho
 If any files are missing, contact your project administrator or refer to the data preparation documentation.
 
 ---
-
-## Running the Pipeline
-
-### ✅ Pre-Flight Checklist
-
-Before running, verify:
-
-- [ ] Virtual environment is activated (you see `(.venv)` in terminal)
-- [ ] You're in the repository root directory (`DS340W-code/`)
-- [ ] All data files exist in `data_copy/` (see [Data Setup](#data-setup))
-- [ ] `requirements.txt` and `new_code_copy/testing.py` are present
-
-### Main Pipeline
-
-```bash
-python new_code_copy/testing.py
-```
 
 **Expected behavior:**
 - **First 2 minutes:** Loads and preprocesses fitness data
